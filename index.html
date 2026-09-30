@@ -347,7 +347,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .pw{position:relative}
 .pw input{padding-right:64px}
 .pw button{position:absolute;right:1px;top:1px;bottom:1px;width:58px;background:var(--panel2);color:var(--ink);font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;border-left:1px solid var(--line)}
-#connMsg{color:var(--ink);line-height:1.45}
+#connMsg{color:var(--ink);line-height:1.45;white-space:pre-line}
 </style>
 </head>
 <body>
@@ -762,8 +762,9 @@ async function syncCheckins(){
     save();
     for(const k of [...new Set(toPush)]) await pushCheckin(k);
     if(restored) toast('Recuperé '+restored+' check-in'+(restored>1?'s':'')+' desde Notion');
-    render();
-  }catch(e){ /* sin conexión: se reintenta luego */ }
+    state.cache.ckError = null; state.cache.ckOkAt = new Date().toISOString(); save();
+    render(); renderConn();
+  }catch(e){ state.cache.ckError = e.hint || e.message; save(); renderConn(); }
 }
 
 // Tareas y eventos
@@ -783,10 +784,10 @@ async function loadEvents(k){
   eventsLoading[k] = true;
   try{
     const d = await api('/api/calendar?date='+k);
-    state.cache.events[k] = {at:Date.now(), list:d.events};
+    state.cache.events[k] = {at:Date.now(), list:d.events}; state.cache.calError = null;
     const ks = Object.keys(state.cache.events).sort(); while(ks.length>10) delete state.cache.events[ks.shift()];
     save();
-  }catch(e){ state.cache.evError = e.message; }
+  }catch(e){ state.cache.calError = e.message; save(); }
   eventsLoading[k] = false; render();
 }
 
@@ -1321,7 +1322,9 @@ function renderConn(){
   const c = conn;
   const tag = (ok, t) => '<span class="'+(ok?'ok':'')+'">'+(ok?'✓ ':'✕ ')+t+'</span>';
   $('connState').innerHTML = !c.checked ? '<span>Revisando…</span>' :
-    tag(c.keyOk,'Clave') + tag(c.keyOk && c.notion,'Notion') + tag(c.keyOk && c.calendar,'Calendar');
+    tag(c.keyOk,'Clave') + tag(c.keyOk && c.notion,'Notion') + tag(c.keyOk && c.calendar,'Calendar') +
+    tag(c.keyOk && c.notion && !state.cache.ckError && !!state.cache.ckOkAt,'Respaldo') +
+    tag(c.keyOk && c.notion && (state.cache.sources||[]).length>0 && (state.cache.sources||[]).every(x=>x.ok),'Tareas');
 }
 function fillSettings(){
   const s = state.settings;
@@ -1351,7 +1354,12 @@ function connDiagnosis(){
   if(c.keyOk){
     const miss = [];
     if(!c.notion) miss.push('NOTION_TOKEN'); if(!c.calendar) miss.push('GCAL_ICS_URL');
-    return miss.length ? 'Clave correcta. En Vercel todavía falta: '+miss.join(' y ')+' (y después, Redeploy).' : 'Todo conectado.';
+    if(miss.length) return 'Clave correcta. En Vercel todavía falta: '+miss.join(' y ')+' (y después, Redeploy).';
+    const probs = [];
+    if(state.cache.ckError) probs.push('Respaldo de check-ins: la página "Disciplina" de Notion no está conectada. Ábrela en Notion → ••• → Conexiones → agrega tu integración.');
+    (state.cache.sources||[]).filter(x=>!x.ok).forEach(x=>probs.push('Tareas de '+((state.cache.meta||{})[x.key]||{label:x.key}).label+': '+(x.hint||x.error)+(x.key==='u'?' (página "U")':' (página "Trabajo - Pertel")')));
+    if(state.cache.calError) probs.push('Calendar: '+state.cache.calError);
+    return probs.length ? probs.join('\n') : 'Todo conectado.';
   }
   if(c.error) return 'No pude hablar con el servidor: '+c.error+'. Revisa que estés abriendo la app desde tu link de Vercel.';
   if(!c.appKey) return 'El servidor todavía no tiene APP_KEY. Revisa que la variable se llame exactamente APP_KEY, que esté marcada para Production, y haz Redeploy en Vercel (las variables solo se aplican en un deploy nuevo).';
@@ -1364,8 +1372,12 @@ $('sTest').onclick = async ()=>{
   state.settings.apiKey = $('sKey').value.trim(); save();
   conn.checked = false; renderConn(); $('connMsg').textContent = 'Probando…';
   await checkConn(); renderConn();
+  if(conn.keyOk){
+    $('connMsg').textContent = 'Clave correcta. Revisando Notion y Calendar…';
+    await Promise.all([syncCheckins(), loadTasks(), loadEvents(keyOf(new Date()))]);
+    renderConn();
+  }
   $('connMsg').textContent = connDiagnosis();
-  if(conn.keyOk){ toast('Conectado'); syncCheckins(); loadTasks(); loadEvents(keyOf(new Date())); }
 };
 $('sSave').onclick = ()=>{
   const s = state.settings;
