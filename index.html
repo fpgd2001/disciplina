@@ -90,7 +90,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .cta.pulse{animation:pulse 1.2s ease-in-out 3}
 @keyframes pulse{50%{box-shadow:6px 6px 0 #000,0 0 0 8px color-mix(in srgb,var(--acc) 35%,transparent)}}
 .done{display:flex;align-items:center;gap:16px;margin-top:16px}
-.badge{flex:none;width:78px;height:78px;display:grid;place-items:center;font-family:var(--display);font-size:52px;background:var(--ink);color:var(--bg);transform:skewX(-10deg)}
+.badge{flex:none;font-family:var(--display);width:78px;height:78px;display:grid;place-items:center;font-family:var(--display);font-size:52px;background:var(--ink);color:var(--bg);transform:skewX(-10deg)}
 .badge span{transform:skewX(10deg)}
 .badge.S{background:var(--hi);color:var(--on-hi)}
 .badge.A{background:var(--acc);color:var(--on-acc)}
@@ -261,6 +261,89 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .paper b{font-family:var(--display);font-weight:400;font-size:44px;letter-spacing:.2em}
 
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + var(--nav) + 16px);transform:translateX(-50%);background:var(--ink);color:var(--bg);font-weight:700;font-size:13px;padding:10px 16px;z-index:80;display:none;white-space:nowrap}
+
+/* ===== v3 ===== */
+.stats.four{grid-template-columns:repeat(2,1fr)}
+.stat.money .v{color:var(--hi)}
+.stat .cap{font-size:11px;color:var(--muted);font-weight:600;margin-top:6px}
+
+/* Hoy (inicio) */
+.today-list{list-style:none;display:flex;flex-direction:column}
+.today-list li{display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.today-list li:last-child{border-bottom:0}
+.today-list .hm{width:48px;flex:none;font-family:var(--display);font-size:17px;color:var(--muted)}
+.today-list .hm.now{color:var(--acc)}
+.today-list .tx{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill{flex:none;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
+.pill.late{background:var(--acc);color:var(--on-acc);border-color:var(--acc)}
+.pill.alta{color:var(--acc);border-color:var(--acc-d)}
+
+/* Agenda */
+.ag-date{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ag-date button{width:40px;height:40px;border:1px solid var(--line);background:var(--panel);font-size:18px;font-weight:800}
+.ag-date .d{flex:1;text-align:center}
+.ag-date .d b{display:block;font-family:var(--display);font-weight:400;font-size:26px;text-transform:uppercase;letter-spacing:.03em}
+.ag-date .d small{font-size:12px;color:var(--muted);font-weight:600}
+.events{list-style:none}
+.events li{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.events li:last-child{border-bottom:0}
+.events .t{width:62px;flex:none;font-variant-numeric:tabular-nums}
+.events .t b{display:block;font-weight:800;font-size:15px}
+.events .t small{color:var(--muted);font-size:12px;font-weight:600}
+.events .n{flex:1;min-width:0;border-left:3px solid var(--acc);padding-left:10px}
+.events .n b{display:block;font-size:15px;line-height:1.3}
+.events .n small{color:var(--muted);font-size:12px}
+.events li.past{opacity:.45}
+.events li.allday .n{border-left-color:var(--hi)}
+.tasks{list-style:none}
+.tasks li{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}
+.tasks li:last-child{border-bottom:0}
+.tbox{flex:none;width:24px;height:24px;margin-top:1px;border:2px solid var(--muted);transform:skewX(-10deg);display:grid;place-items:center}
+.tbox.on{background:var(--acc);border-color:var(--acc)}
+.tbox.on::after{content:"✓";color:var(--on-acc);font-weight:800;font-size:14px;transform:skewX(10deg)}
+.tbox.busy{opacity:.4}
+.tasks .tt{flex:1;min-width:0}
+.tasks .tt b{display:block;font-size:15px;font-weight:600;line-height:1.3}
+.tasks li.done .tt b{text-decoration:line-through;color:var(--muted)}
+.tasks .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.tasks .xpg{flex:none;font-size:11px;font-weight:800;color:var(--hi);margin-top:3px}
+.grp{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:800;margin:14px 0 2px}
+.grp:first-child{margin-top:0}
+.grp.late{color:var(--acc)}
+.fab{position:fixed;right:16px;bottom:calc(env(safe-area-inset-bottom) + var(--nav) + 16px);z-index:30;width:58px;height:58px;background:var(--acc);color:var(--on-acc);font-family:var(--display);font-size:34px;line-height:1;transform:skewX(-8deg);box-shadow:4px 4px 0 #000;display:none}
+.fab span{display:inline-block;transform:skewX(8deg)}
+.fab.show{display:block}
+.setup{border:1px dashed var(--line);padding:16px;background:var(--panel)}
+.setup b{display:block;font-family:var(--display);font-weight:400;font-size:22px;text-transform:uppercase;margin-bottom:6px}
+.setup p{font-size:13px;color:var(--muted);line-height:1.5}
+.syncline{font-size:11px;color:var(--muted);text-align:center;letter-spacing:.06em}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line)}
+.seg button{padding:11px;font-weight:800;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.seg button.on{background:var(--acc);color:var(--on-acc)}
+.f select{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);font:inherit;font-size:16px;padding:11px 12px;border-radius:0;-webkit-appearance:none;appearance:none}
+
+/* Fondo y premios */
+.fund{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--hi);padding:16px}
+.fund .big{font-family:var(--display);font-size:48px;line-height:1;color:var(--hi)}
+.fund .big small{font-size:20px;color:var(--muted)}
+.fund .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.fund .row3 div{border-left:2px solid var(--line);padding-left:10px}
+.fund .row3 b{display:block;font-family:var(--display);font-weight:400;font-size:20px}
+.fund .row3 small{font-size:11px;color:var(--muted)}
+.rewards{list-style:none}
+.rewards li{display:flex;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.rewards li:last-child{border-bottom:0}
+.rewards .rw{flex:1;min-width:0}
+.rewards .rw small{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.rewards .rw b{display:block;font-size:15px;margin-top:2px}
+.rewards li.lock .rw b{color:var(--muted)}
+.rewards .st{flex:none;font-size:11px;font-weight:800;letter-spacing:.1em;padding:7px 10px;border:1px solid var(--line);color:var(--muted);text-transform:uppercase}
+.rewards .st.ready{background:var(--hi);color:var(--on-hi);border-color:var(--hi)}
+.rewards .st.got{color:var(--hi);border-color:var(--hi)}
+.lockmsg{font-size:12px;color:var(--muted);margin:-4px 0 12px;line-height:1.4}
+.conn{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.conn span{font-size:11px;font-weight:800;letter-spacing:.1em;padding:5px 8px;border:1px solid var(--line);color:var(--muted)}
+.conn span.ok{color:var(--hi);border-color:var(--hi)}
 </style>
 </head>
 <body>
@@ -289,10 +372,16 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 
     <div class="warn" id="warn" hidden><span>Comodín usado · Hoy no se falla</span></div>
 
-    <section class="stats">
+    <section class="stats four">
       <div class="stat"><div class="label">Racha</div><div class="v" id="stStreak">0</div></div>
       <div class="stat"><div class="label">Nivel</div><div class="v" id="stLevel">1</div><div class="bar"><i id="xpBar"></i></div></div>
       <button class="stat" data-go="logros"><div class="label">Logros</div><div class="v" id="stAch">0</div><div class="bar"><i id="achBar"></i></div></button>
+      <button class="stat money" data-go="logros"><div class="label">Fondo</div><div class="v" id="stFund">S/ 0</div><div class="cap" id="stFundCap"></div></button>
+    </section>
+
+    <section class="card">
+      <h2>Hoy <button class="more" data-go="agenda">AGENDA ›</button></h2>
+      <ul class="today-list" id="todayList"></ul>
     </section>
 
     <section class="card">
@@ -306,9 +395,28 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
     </section>
 
     <button class="tonight" data-go="noche">
-      <div class="tt"><div class="label">Esta noche</div><b id="tnLine">Celular fuera 21:45 · Dormir 22:15</b></div>
+      <div class="tt"><div class="label">Esta noche</div><b id="tnLine">Celular fuera 21:45 · Cama 22:15</b></div>
       <div class="arr">›</div>
     </button>
+  </section>
+
+  <!-- ============ AGENDA ============ -->
+  <section class="view" id="v-agenda">
+    <div class="ag-date">
+      <button id="agPrev" aria-label="Día anterior">‹</button>
+      <div class="d"><b id="agDay">Hoy</b><small id="agSub"></small></div>
+      <button id="agNext" aria-label="Día siguiente">›</button>
+    </div>
+    <div id="agSetup"></div>
+    <section class="card" id="agEventsCard">
+      <h2>Eventos <span class="more" id="agEvCount"></span></h2>
+      <ul class="events" id="agEvents"></ul>
+    </section>
+    <section class="card" id="agTasksCard">
+      <h2>Misiones <span class="more" id="agTaskCount"></span></h2>
+      <div id="agTasks"></div>
+    </section>
+    <div class="syncline" id="agSync"></div>
   </section>
 
   <!-- ============ REGISTRO ============ -->
@@ -323,7 +431,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
       <h2>Últimos 14 días</h2>
       <ul class="hist" id="hist"></ul>
     </section>
-    <p class="hint">S = hasta 5 min tarde · A = hasta 15 · B = hasta 30 · C = hasta 60 · D = más. Solo S y A cuentan como cumplido. Los días marcados MANUAL dan la mitad de XP, pero sí cuentan para la racha.</p>
+    <p class="hint">S = hasta 5 min tarde · A = hasta 15 · B = hasta 30 · C = hasta 60 · D = más. Solo S y A cuentan como cumplido. Los días MANUAL dan la mitad de XP y cuentan para la racha, pero no suman soles al fondo.</p>
   </section>
 
   <!-- ============ NOCHE ============ -->
@@ -348,6 +456,22 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   <!-- ============ LOGROS ============ -->
   <section class="view" id="v-logros">
     <div class="vt"><h1>Lo<em>gros</em></h1></div>
+    <section class="fund">
+      <div class="label" id="fundLabel">Fondo del mes</div>
+      <div class="big" id="fundMonth">S/ 0<small>/104</small></div>
+      <div class="bar"><i id="fundBar"></i></div>
+      <div class="row3">
+        <div><b id="fundBal">S/ 0</b><small>Disponible</small></div>
+        <div><b id="fundTotal">S/ 0</b><small>Ganado total</small></div>
+        <div><b id="fundSpent">S/ 0</b><small>Canjeado</small></div>
+      </div>
+      <button class="btn sec" id="fundSpend" style="margin-top:14px">Registrar canje</button>
+    </section>
+    <section class="card">
+      <h2>Premios</h2>
+      <ul class="rewards" id="rewards"></ul>
+      <p class="hint" style="margin-top:8px">Los premios se definen en Ajustes. Cuando desbloquees un hito, cómpralo con el fondo y márcalo como cobrado.</p>
+    </section>
     <section class="plat" id="platCard">
       <svg class="trophy" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" id="trophy"><path d="M18 8h28v14a14 14 0 0 1-28 0z"/><path d="M18 14H8v4a10 10 0 0 0 10 10M46 14h10v4a10 10 0 0 1-10 10M32 36v10M22 56h20l-3-10H25z"/></svg>
       <div class="label">Progreso a platino</div>
@@ -377,6 +501,29 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
       </div>
     </section>
     <section class="card">
+      <h2>Conexión</h2>
+      <div class="conn" id="connState"></div>
+      <div class="f">
+        <label for="sKey">Clave de la app</label>
+        <input id="sKey" type="password" autocomplete="off" placeholder="La misma que pusiste en Vercel (APP_KEY)">
+        <div class="hint">Conecta la app con tu Notion y tu Google Calendar. Sin la clave, la app funciona igual pero solo en este celular.</div>
+      </div>
+      <button class="btn sec" id="sTest">Probar conexión</button>
+    </section>
+    <section class="card">
+      <h2>Fondo</h2>
+      <p class="lockmsg" id="fundLock"></p>
+      <div class="row">
+        <div class="f"><label for="sPerS">S/ por S</label><input id="sPerS" type="number" inputmode="decimal" min="0" step="0.5"></div>
+        <div class="f"><label for="sPerA">S/ por A</label><input id="sPerA" type="number" inputmode="decimal" min="0" step="0.5"></div>
+        <div class="f"><label for="sCap">Techo mes</label><input id="sCap" type="number" inputmode="decimal" min="0" step="1"></div>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Premios</h2>
+      <div id="sRewards"></div>
+    </section>
+    <section class="card">
       <h2>Tema</h2>
       <div class="themes" id="sThemes"></div>
     </section>
@@ -393,7 +540,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
     <button class="btn" id="sSave">Guardar cambios</button>
     <section class="card">
       <h2>Datos</h2>
-      <p class="hint" style="margin:0 0 6px">Tus datos viven solo en este celular. Copia un respaldo de vez en cuando y pégalo en Notas.</p>
+      <p class="hint" style="margin:0 0 6px">Con la conexión activa, tus check-ins se guardan también en Notion (página "Disciplina"). El respaldo manual sigue disponible.</p>
       <button class="btn sec" id="sExport">Copiar respaldo</button>
       <button class="btn sec" id="sImport">Restaurar respaldo</button>
       <button class="btn sec" id="sTutorial">Ver tutorial otra vez</button>
@@ -402,11 +549,13 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   </section>
 </div>
 
+<button class="fab" id="fab" aria-label="Nueva misión"><span>+</span></button>
+
 <!-- Barra inferior -->
 <nav class="nav"><div class="in">
-  <button data-go="inicio" class="on"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Inicio</button>
+  <button data-go="inicio" class="on"><span class="dot" id="nightDot"></span><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Inicio</button>
+  <button data-go="agenda"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M3.5 6l1.5 1.5L7.5 5M3.5 12l1.5 1.5L7.5 11M3.5 18l1.5 1.5L7.5 17"/></svg>Agenda</button>
   <button data-go="registro"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="1"/><path d="M4 10h16M9 3v4M15 3v4M8 14h3M8 17h6"/></svg>Registro</button>
-  <button data-go="noche"><span class="dot" id="nightDot"></span><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>Noche</button>
   <button data-go="logros"><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a4 4 0 0 0 4 4M17 6h3v1a4 4 0 0 1-4 4M12 14v4M8 21h8l-1-3H9z"/></svg>Logros</button>
   <button data-go="ajustes"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Ajustes</button>
 </div></nav>
@@ -441,11 +590,29 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 <div class="ov sheet" id="manual">
   <div class="box">
     <h3 id="manTitle">Registrar día</h3>
-    <p class="sd">Pon la hora real a la que te levantaste. Queda marcado como MANUAL: da la mitad de XP, pero cuenta para la racha.</p>
+    <p class="sd">Pon la hora real a la que te levantaste. Queda marcado como MANUAL: da la mitad de XP y cuenta para la racha, pero no suma soles.</p>
     <div class="f"><label for="manTime">Hora en que te levantaste</label><input type="time" id="manTime"></div>
     <button class="btn" id="manSave">Guardar</button>
     <button class="btn dng" id="manDel">Borrar registro de este día</button>
     <button class="btn sec" id="manCancel">Cancelar</button>
+  </div>
+</div>
+
+<!-- Nueva misión -->
+<div class="ov sheet" id="newTask">
+  <div class="box">
+    <h3>Nueva misión</h3>
+    <p class="sd">Se guarda directo en tu Notion.</p>
+    <div class="f"><label for="ntTitle">¿Qué hay que hacer?</label><input id="ntTitle" autocomplete="off" placeholder="Ej. Leer caso de Civil III"></div>
+    <div class="f"><label>¿Dónde?</label><div class="seg" id="ntSrc"><button data-s="u" class="on">U</button><button data-s="pertel">Pertel</button></div></div>
+    <div class="row">
+      <div class="f"><label for="ntDate">Fecha</label><input type="date" id="ntDate"></div>
+      <div class="f"><label for="ntPrio">Prioridad</label><select id="ntPrio"><option value="">—</option><option>Alta</option><option selected>Media</option><option>Baja</option></select></div>
+    </div>
+    <div class="f" id="ntExtraWrap"><label for="ntExtra">Curso</label><select id="ntExtra"></select></div>
+    <div class="err" id="ntErr"></div>
+    <button class="btn" id="ntSave">Guardar misión</button>
+    <button class="btn sec" id="ntCancel">Cancelar</button>
   </div>
 </div>
 
@@ -466,6 +633,7 @@ const KEY = 'disciplina_v1';
 const DOW = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 const DOW1 = ['D','L','M','M','J','V','S'];
 const MON = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+const MONL = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const THEMES = [
   {id:'rojo',     nm:'Rojo',     bg:'#0e0e10', acc:'#e0253c', hi:'#e8c35a'},
   {id:'amarillo', nm:'Amarillo', bg:'#111009', acc:'#ffc61a', hi:'#ff7b1c'},
@@ -479,7 +647,15 @@ const RANKS = {
   D:{xp:10,label:'Algo es algo'}
 };
 const XP_PER_LEVEL = 300;
+const OPEN_BEFORE = 90; // el check-in se abre 90 min antes de la hora meta
+function tooEarly(now){ return now.getHours()*60+now.getMinutes() < toMin(state.settings.wake) - OPEN_BEFORE; }
 const NIGHT_ITEMS = ['Celular cargado','Alarmas puestas','Celular lejos de la cama','Nada de videos en la cama'];
+const REWARD_SLOTS = [
+  {id:'streak6',  n:'Racha de 6 días',   test:(i,l)=>i.best>=6},
+  {id:'level5',   n:'Nivel 5',           test:(i,l)=>l>=5},
+  {id:'streak21', n:'Racha de 21 días',  test:(i,l)=>i.best>=21},
+  {id:'platino',  n:'Platino',           test:(i,l,a)=>a}
+];
 const DEFAULT_MSGS = [
   'Ya estás de pie. Eso ya es ganarle a ayer.',
   'Primera decisión del día: ganada.',
@@ -502,16 +678,26 @@ const toMin = hm => { const [h,m] = hm.split(':').map(Number); return h*60+m; };
 const fmtMin = m => { m = ((m%1440)+1440)%1440; return pad(Math.floor(m/60))+':'+pad(m%60); };
 const isActive = d => d.getDay() !== 0; // domingo libre
 const lines = t => t.split('\n').map(x=>x.trim()).filter(Boolean);
+const soles = n => 'S/ '+(Math.round(n*10)/10).toString().replace(/\.0$/,'');
+const monthKey = k => k.slice(0,7);
 
 function defaults(){
   return {
-    settings:{ name:'', age:null, goals:[], wake:'05:45', bed:'22:15', code:'', voice:true, theme:'rojo', messages:DEFAULT_MSGS.slice(), onboarded:false },
-    checkins:{}, night:{}
+    settings:{ name:'', age:null, goals:[], wake:'05:45', bed:'22:15', code:'', voice:true, theme:'rojo', messages:DEFAULT_MSGS.slice(), onboarded:false,
+      apiKey:'', fund:{perS:4, perA:1, cap:104}, rewards:{streak6:'',level5:'',streak21:'',platino:''} },
+    checkins:{}, night:{}, taskXp:{}, spent:[], rewardsClaimed:{}, cache:{tasks:[], meta:{}, events:{}, syncedAt:null}
   };
 }
 function merge(s){
   const d = defaults();
-  return Object.assign(d, s, {settings:Object.assign(d.settings, s.settings||{}), night:s.night||{}});
+  const out = Object.assign(d, s);
+  out.settings = Object.assign(defaults().settings, s.settings||{});
+  out.settings.fund = Object.assign(defaults().settings.fund, (s.settings||{}).fund||{});
+  out.settings.rewards = Object.assign(defaults().settings.rewards, (s.settings||{}).rewards||{});
+  out.cache = Object.assign(defaults().cache, s.cache||{});
+  ['night','taskXp','rewardsClaimed'].forEach(k=>{ if(!out[k] || typeof out[k]!=='object') out[k]={}; });
+  if(!Array.isArray(out.spent)) out.spent = [];
+  return out;
 }
 function load(){
   try{ const s = JSON.parse(localStorage.getItem(KEY)); if(s && s.settings && s.checkins) return merge(s); }catch(e){}
@@ -519,6 +705,85 @@ function load(){
 }
 let state = load();
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){ toast('No se pudo guardar'); } }
+
+// ---- API ----
+let conn = {checked:false, keyOk:false, notion:false, calendar:false, appKey:false, error:null};
+async function api(path, opts={}){
+  const r = await fetch(path, {
+    method: opts.method||'GET',
+    headers: Object.assign({'x-app-key': state.settings.apiKey||'', 'Content-Type':'application/json'}),
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+    cache: 'no-store'
+  });
+  let data = {}; try{ data = await r.json(); }catch(e){}
+  if(!r.ok){ const e = new Error(data.error || ('Error '+r.status)); e.status = r.status; e.hint = data.hint; throw e; }
+  return data;
+}
+const online = () => conn.keyOk;
+async function checkConn(){
+  if(location.protocol === 'file:'){ conn = {checked:true,keyOk:false,error:'Sin servidor'}; return conn; }
+  try{
+    const s = await api('/api/status');
+    conn = Object.assign({checked:true, error:null}, s);
+  }catch(e){ conn = {checked:true, keyOk:false, error:e.message}; }
+  return conn;
+}
+
+// Check-ins <-> Notion
+async function pushCheckin(k){
+  if(!online() || !conn.notion) return;
+  const r = state.checkins[k];
+  try{
+    if(r) await api('/api/checkins', {method:'POST', body:{date:k, time:r.time, target:r.target, rank:r.rank, xp:r.xp, money:r.money||0, manual:!!r.manual}});
+    else await api('/api/checkins?date='+k, {method:'DELETE'});
+    delete (state.pendingPush||{})[k];
+  }catch(e){ state.pendingPush = state.pendingPush||{}; state.pendingPush[k]=1; }
+  save();
+}
+async function syncCheckins(){
+  if(!online() || !conn.notion) return;
+  try{
+    const {checkins} = await api('/api/checkins');
+    const remote = {};
+    checkins.forEach(c=>{ remote[c.date] = c; });
+    let restored = 0;
+    Object.entries(remote).forEach(([k,c])=>{
+      if(!state.checkins[k] && c.rank){
+        state.checkins[k] = {time:c.time, rank:c.rank, xp:c.xp, money:c.money, target:c.target||state.settings.wake, manual:c.manual, ts:null};
+        restored++;
+      }
+    });
+    const toPush = Object.keys(state.checkins).filter(k=>!remote[k]).concat(Object.keys(state.pendingPush||{}));
+    save();
+    for(const k of [...new Set(toPush)]) await pushCheckin(k);
+    if(restored) toast('Recuperé '+restored+' check-in'+(restored>1?'s':'')+' desde Notion');
+    render();
+  }catch(e){ /* sin conexión: se reintenta luego */ }
+}
+
+// Tareas y eventos
+let tasksLoading = false, eventsLoading = {};
+async function loadTasks(){
+  if(!online() || !conn.notion || tasksLoading) return;
+  tasksLoading = true;
+  try{
+    const d = await api('/api/tasks');
+    state.cache.tasks = d.tasks; state.cache.meta = d.meta; state.cache.sources = d.sources;
+    state.cache.syncedAt = new Date().toISOString(); save();
+  }catch(e){ state.cache.error = e.message; }
+  tasksLoading = false; render();
+}
+async function loadEvents(k){
+  if(!online() || !conn.calendar || eventsLoading[k]) return;
+  eventsLoading[k] = true;
+  try{
+    const d = await api('/api/calendar?date='+k);
+    state.cache.events[k] = {at:Date.now(), list:d.events};
+    const ks = Object.keys(state.cache.events).sort(); while(ks.length>10) delete state.cache.events[ks.shift()];
+    save();
+  }catch(e){ state.cache.evError = e.message; }
+  eventsLoading[k] = false; render();
+}
 
 // ---- Tema ----
 function applyTheme(id){
@@ -547,7 +812,22 @@ function rankFor(checkMin, targetMin){
   return 'D';
 }
 const ok = r => !!r && (r.rank === 'S' || r.rank === 'A');
-function totalXp(){ return Object.values(state.checkins).reduce((a,r)=>a+(r.xp||0),0); }
+function checkinXp(){ return Object.values(state.checkins).reduce((a,r)=>a+(r.xp||0),0); }
+function tasksXp(){ return Object.values(state.taskXp).reduce((a,t)=>a+(t.xp||0),0); }
+function totalXp(){ return checkinXp() + tasksXp(); }
+
+// Fondo
+function fundEarned(month){
+  return Object.entries(state.checkins).filter(([k])=>!month || monthKey(k)===month).reduce((a,[,r])=>a+(r.money||0),0);
+}
+function fundSpent(){ return state.spent.reduce((a,s)=>a+(s.amount||0),0); }
+function moneyFor(rank, k){
+  const f = state.settings.fund;
+  const rate = rank==='S' ? f.perS : rank==='A' ? f.perA : 0;
+  const room = Math.max(0, f.cap - fundEarned(monthKey(k)));
+  return Math.max(0, Math.min(rate, room));
+}
+function fundEditable(){ return new Date().getDate() <= 3 || !state.settings.fundLockedAt; }
 
 // Racha con regla "nunca dos seguidas": un fallo no la rompe, dos seguidos sí.
 function streakInfo(){
@@ -583,6 +863,7 @@ function achievements(info, level){
   const recs = Object.values(state.checkins);
   const sCount = recs.filter(r=>r.rank==='S').length;
   const early = recs.filter(r=>!r.manual && r.target && toMin(r.time) <= toMin(r.target)-5).length;
+  const tasksDone = Object.keys(state.taskXp).length;
   const list = [
     {ic:'I',   n:'Primer paso',       h:'Tu primer check-in',                    on:recs.length>=1},
     {ic:'3',   n:'Tres al hilo',      h:'Racha de 3 días',                        on:info.best>=3},
@@ -595,6 +876,7 @@ function achievements(info, level){
     {ic:'S20', n:'Veinte impecables', h:'20 rangos S',                            on:sCount>=20},
     {ic:'-5',  n:'Antes de la alarma',h:'3 check-ins 5 min antes de tu hora',     on:early>=3},
     {ic:'↺',   n:'Remontada',         h:'Fallar un día y volver al siguiente',    on:info.comebacks>=1},
+    {ic:'M10', n:'Diez misiones',     h:'Completa 10 tareas de tu agenda',        on:tasksDone>=10},
     {ic:'LV5', n:'Nivel 5',           h:'Llegar a nivel 5',                       on:level>=5},
     {ic:'L10', n:'Nivel 10',          h:'Llegar a nivel 10',                      on:level>=10}
   ];
@@ -609,7 +891,36 @@ function sleepAdvice(age){
   return [7,8];
 }
 
+// Tareas: XP según puntualidad
+function taskReward(t){
+  const today = keyOf(new Date());
+  let xp = !t.due ? 20 : (t.due.slice(0,10) >= today ? 30 : 15);
+  if(t.priority === 'Alta') xp += 10;
+  return xp;
+}
+function taskGroups(dayKey){
+  const today = keyOf(new Date());
+  const all = (state.cache.tasks||[]);
+  const pend = all.filter(t=>!t.done || state.taskXp[t.id]);
+  const lim = new Date(fromKey(dayKey)); lim.setDate(lim.getDate()+7); const limK = keyOf(lim);
+  const byDue = (a,b)=>((a.due||'9999')+(a.priority==='Alta'?'0':'1')).localeCompare((b.due||'9999')+(b.priority==='Alta'?'0':'1'));
+  const recentlyDone = t => t.done && state.taskXp[t.id] && state.taskXp[t.id].date === today;
+  const isOpen = t => !t.done || recentlyDone(t);
+  const g = {late:[], day:[], next:[], none:[]};
+  pend.filter(isOpen).forEach(t=>{
+    const d = t.due ? t.due.slice(0,10) : null;
+    if(!d) g.none.push(t);
+    else if(d < dayKey && dayKey === today && !t.done) g.late.push(t);
+    else if(d === dayKey) g.day.push(t);
+    else if(d > dayKey && d <= limK) g.next.push(t);
+    else if(d < dayKey && t.done && dayKey===today) g.day.push(t);
+  });
+  Object.values(g).forEach(a=>a.sort(byDue));
+  return g;
+}
+
 // ---- Render ----
+let agDay = keyOf(new Date());
 function render(){
   const s = state.settings, now = new Date();
   const todayKey = keyOf(now), rec = state.checkins[todayKey];
@@ -633,16 +944,24 @@ function render(){
   $('stStreak').innerHTML = info.current+'<small>'+(info.current===1?'día':'días')+'</small>';
   $('stAch').innerHTML = got+'<small>/'+achs.length+'</small>';
   $('achBar').style.width = (got/achs.length*100)+'%';
+  const mEarn = fundEarned(monthKey(todayKey));
+  $('stFund').textContent = soles(fundEarned() - fundSpent());
+  $('stFundCap').textContent = soles(mEarn)+' de '+soles(s.fund.cap)+' este mes';
   $('warn').hidden = !info.shield;
 
   const hb = $('heroBody');
   if(rec){
     hb.innerHTML = '<div class="done"><div class="badge '+rec.rank+'"><span>'+rec.rank+'</span></div>'+
-      '<div><div class="t">'+rec.time+'</div><div class="d">'+RANKS[rec.rank].label+(rec.manual?' · manual':'')+'</div><div class="xp">+'+rec.xp+' XP</div></div></div>';
+      '<div><div class="t">'+rec.time+'</div><div class="d">'+RANKS[rec.rank].label+(rec.manual?' · manual':'')+'</div><div class="xp">+'+rec.xp+' XP'+(rec.money?' · +'+soles(rec.money):'')+'</div></div></div>';
+  }else if(tooEarly(now)){
+    hb.innerHTML = '<div class="done"><div class="badge"><span>Z</span></div><div><div class="t">Aún es de noche</div>'+
+      '<div class="d">El check-in se abre a las '+fmtMin(toMin(s.wake)-OPEN_BEFORE)+'. Si no puedes dormir: luz baja, nada de pantallas, y vuelve a la cama.</div></div></div>';
   }else{
     hb.innerHTML = '<button class="cta" id="cta"><span>ME LEVANTÉ</span></button>';
     $('cta').onclick = startCheckin;
   }
+
+  renderTodayCard(todayKey, now);
 
   // Semana (lunes a domingo actual)
   const monday = new Date(now); monday.setHours(0,0,0,0); monday.setDate(monday.getDate() - ((monday.getDay()+6)%7));
@@ -674,8 +993,7 @@ function render(){
   let note = 'Tu horario te da <b>'+Math.floor(sleep/60)+' h '+pad(sleep%60)+' min</b> de sueño.';
   if(adv){
     note += ' Para '+esc(s.age)+' años se recomiendan <b>'+adv[0]+'–'+adv[1]+' h</b>.';
-    if(sleep < adv[0]*60) note += ' Te estás quedando corto: acuéstate antes.';
-    else note += ' Estás dentro del rango.';
+    note += sleep < adv[0]*60 ? ' Te estás quedando corto: acuéstate antes.' : ' Estás dentro del rango.';
   }
   $('nSleep').innerHTML = note;
   const nk = nightKey();
@@ -697,14 +1015,34 @@ function render(){
   $('hist').innerHTML = lastDays(14).map(d=>{
     const k = keyOf(d), r = state.checkins[k];
     const label = (k===todayKey?'hoy':DOW[d.getDay()].slice(0,3)+' '+d.getDate());
-    const tag = r && r.manual ? '<span class="tag">MANUAL</span>' : '';
+    const tag = r && r.manual ? '<span class="tag">MANUAL</span>' : (r && r.money ? '<span class="tag" style="color:var(--hi);border-color:var(--hi)">+'+soles(r.money)+'</span>' : '');
     if(!isActive(d)) return '<li class="off" data-k="'+k+'"><span class="day">'+label+'</span><span class="tm">Libre'+(r?' · '+r.time:'')+tag+'</span><span class="mini'+(r?' '+r.rank:'')+'" style="margin:0">'+(r?r.rank:'–')+'</span></li>';
     const pending = k===todayKey && !r;
     return '<li data-k="'+k+'"><span class="day">'+label+'</span><span class="tm">'+(r?r.time:(pending?'Pendiente':'Sin registro'))+tag+'</span><span class="mini '+(r?r.rank:'')+'" style="margin:0">'+(r?r.rank:(pending?'·':'✕'))+'</span></li>';
   }).join('');
   $('hist').querySelectorAll('li').forEach(li=>li.onclick=()=>openManual(li.dataset.k));
 
-  // Logros
+  // Logros: fondo
+  $('fundLabel').textContent = 'Fondo de '+MONL[now.getMonth()];
+  $('fundMonth').innerHTML = soles(mEarn).replace('S/ ','S/ ')+'<small>/'+s.fund.cap+'</small>';
+  $('fundBar').style.width = Math.min(100, s.fund.cap ? mEarn/s.fund.cap*100 : 0)+'%';
+  $('fundBal').textContent = soles(fundEarned() - fundSpent());
+  $('fundTotal').textContent = soles(fundEarned());
+  $('fundSpent').textContent = soles(fundSpent());
+  const allAchNoPlat = achs.filter(a=>!a.platino).every(a=>a.on);
+  $('rewards').innerHTML = REWARD_SLOTS.map(r=>{
+    const prize = s.rewards[r.id];
+    const unlocked = r.test(info, level, allAchNoPlat);
+    const claimed = state.rewardsClaimed[r.id];
+    const st = claimed ? '<span class="st got">Cobrado</span>' : unlocked ? '<button class="st ready" data-claim="'+r.id+'">Cobrar</button>' : '<span class="st">Bloqueado</span>';
+    return '<li class="'+(unlocked?'':'lock')+'"><div class="rw"><small>'+r.n+'</small><b>'+(prize?esc(prize):'<span style="color:var(--muted);font-weight:500">Sin definir · ponlo en Ajustes</span>')+'</b></div>'+st+'</li>';
+  }).join('');
+  $('rewards').querySelectorAll('[data-claim]').forEach(b=>b.onclick=()=>{
+    if(!confirm('¿Marcar este premio como cobrado?')) return;
+    state.rewardsClaimed[b.dataset.claim] = keyOf(new Date()); save(); render(); toast('Premio cobrado. Te lo ganaste.');
+  });
+
+  // Logros: platino
   const normal = achs.filter(a=>!a.platino);
   const gotN = normal.filter(a=>a.on).length;
   $('platNum').innerHTML = got+'<small>/'+achs.length+'</small>';
@@ -714,7 +1052,119 @@ function render(){
   $('platHint').textContent = achs[achs.length-1].on ? '¡Platinado! Disciplina completa.' : 'Te faltan '+(normal.length-gotN)+' logros para platinar.';
   $('achs').innerHTML = achs.map(a=>
     '<div class="ach'+(a.on?' on':'')+(a.platino?' platino':'')+'"><div class="ic"><span>'+a.ic+'</span></div><div><div class="n">'+a.n+'</div><div class="h">'+a.h+'</div></div></div>').join('');
+
+  renderAgenda();
 }
+
+function renderTodayCard(todayKey, now){
+  const items = [];
+  const nowM = now.getHours()*60+now.getMinutes();
+  const ev = state.cache.events[todayKey];
+  if(ev) ev.list.filter(e=>e.allDay || toMin(e.end) > nowM).slice(0,3).forEach(e=>{
+    const live = !e.allDay && toMin(e.start) <= nowM;
+    items.push('<li><span class="hm'+(live?' now':'')+'">'+(e.allDay?'Día':e.start)+'</span><span class="tx">'+esc(e.title)+'</span>'+(live?'<span class="pill late">Ahora</span>':'')+'</li>');
+  });
+  const g = taskGroups(todayKey);
+  const tk = g.late.concat(g.day).filter(t=>!t.done);
+  tk.slice(0,3).forEach(t=>{
+    const late = t.due && t.due.slice(0,10) < todayKey;
+    items.push('<li><span class="hm">'+(late?'!':'◇')+'</span><span class="tx">'+esc(t.title)+'</span><span class="pill'+(late?' late':'')+'">'+(late?'Vencida':t.sourceLabel)+'</span></li>');
+  });
+  if(tk.length > 3) items.push('<li><span class="hm"></span><span class="tx" style="color:var(--muted);font-weight:500">+'+(tk.length-3)+' misiones más</span></li>');
+  if(!items.length){
+    items.push(online()
+      ? '<li><span class="tx" style="color:var(--muted);font-weight:500;white-space:normal">Nada pendiente para hoy. Agrega misiones desde Agenda.</span></li>'
+      : '<li><span class="tx" style="color:var(--muted);font-weight:500;white-space:normal">Conecta tu Notion y tu Calendar en Ajustes para ver tu día aquí.</span></li>');
+  }
+  $('todayList').innerHTML = items.join('');
+}
+
+function renderAgenda(){
+  const today = keyOf(new Date());
+  const d = fromKey(agDay);
+  const diff = Math.round((d - fromKey(today))/86400000);
+  $('agDay').textContent = diff===0 ? 'Hoy' : diff===1 ? 'Mañana' : diff===-1 ? 'Ayer' : DOW[d.getDay()];
+  $('agSub').textContent = DOW[d.getDay()]+' '+d.getDate()+' de '+MONL[d.getMonth()];
+  const setup = $('agSetup');
+  if(!online()){
+    setup.innerHTML = '<div class="setup"><b>Conecta tu agenda</b><p>'+(conn.checked && conn.error && state.settings.apiKey ? esc(conn.error)+'. ' : '')+
+      'Pon la clave de la app en <b>Ajustes → Conexión</b> para ver aquí tus eventos de Google Calendar y tus tareas de Notion.</p></div>';
+  } else {
+    const miss = [];
+    if(!conn.notion) miss.push('Notion (NOTION_TOKEN)');
+    if(!conn.calendar) miss.push('Google Calendar (GCAL_ICS_URL)');
+    const bad = (state.cache.sources||[]).filter(x=>!x.ok);
+    let html = '';
+    if(miss.length) html += '<div class="setup"><b>Falta configurar</b><p>En Vercel falta: '+miss.join(' y ')+'.</p></div>';
+    if(bad.length) html += '<div class="setup"><b>Notion no deja leer</b><p>'+bad.map(x=>esc((state.cache.meta[x.key]||{}).label||x.key)+': '+esc(x.hint||x.error)).join('<br>')+'</p></div>';
+    setup.innerHTML = html;
+  }
+  // Eventos
+  const ev = state.cache.events[agDay];
+  $('agEventsCard').style.display = (online() && conn.calendar) || ev ? '' : 'none';
+  const nowM = new Date().getHours()*60+new Date().getMinutes();
+  if(ev){
+    $('agEvCount').textContent = ev.list.length;
+    $('agEvents').innerHTML = ev.list.length ? ev.list.map(e=>{
+      const past = agDay < today || (agDay===today && !e.allDay && toMin(e.end) <= nowM);
+      return '<li class="'+(past?'past':'')+(e.allDay?' allday':'')+'"><div class="t">'+(e.allDay?'<b>Todo</b><small>el día</small>':'<b>'+e.start+'</b><small>'+e.end+'</small>')+
+        '</div><div class="n"><b>'+esc(e.title)+'</b>'+(e.location?'<small>'+esc(e.location)+'</small>':'')+'</div></li>';
+    }).join('') : '<li class="empty">Sin eventos este día.</li>';
+  } else {
+    $('agEvCount').textContent = '';
+    $('agEvents').innerHTML = '<li class="empty">'+(eventsLoading[agDay]?'Cargando…':'Sin datos todavía.')+'</li>';
+  }
+  // Tareas
+  const hasTasks = online() && conn.notion;
+  $('agTasksCard').style.display = hasTasks || (state.cache.tasks||[]).length ? '' : 'none';
+  $('fab').classList.toggle('show', hasTasks && document.getElementById('v-agenda').classList.contains('on'));
+  const g = taskGroups(agDay);
+  const sec = (title, arr, cls) => arr.length ? '<div class="grp '+(cls||'')+'">'+title+'</div><ul class="tasks">'+arr.map(taskRow).join('')+'</ul>' : '';
+  let html = '';
+  if(agDay===today) html += sec('Vencidas', g.late, 'late');
+  html += sec(agDay===today?'Para hoy':'Para este día', g.day);
+  html += sec('Próximos 7 días', g.next);
+  if(agDay===today) html += sec('Sin fecha', g.none);
+  const pendingCount = g.late.concat(g.day).filter(t=>!t.done).length;
+  $('agTaskCount').textContent = pendingCount ? pendingCount+' pendiente'+(pendingCount>1?'s':'') : '';
+  $('agTasks').innerHTML = html || '<p class="empty">'+(tasksLoading?'Cargando…':'Nada pendiente. Toca + para agregar una misión.')+'</p>';
+  $('agTasks').querySelectorAll('[data-task]').forEach(b=>b.onclick=()=>toggleTask(b.dataset.task));
+  const at = state.cache.syncedAt ? new Date(state.cache.syncedAt) : null;
+  $('agSync').textContent = at ? 'Actualizado '+pad(at.getHours())+':'+pad(at.getMinutes())+' · desliza abajo o vuelve a abrir la tab para refrescar' : '';
+}
+function taskRow(t){
+  const today = keyOf(new Date());
+  const d = t.due ? t.due.slice(0,10) : null;
+  const late = d && d < today && !t.done;
+  const dl = d ? (d===today?'Hoy':(()=>{const x=fromKey(d);return DOW[x.getDay()].slice(0,3)+' '+x.getDate();})()) : '';
+  const tx = state.taskXp[t.id];
+  const meta = '<span class="pill">'+esc(t.sourceLabel)+'</span>'+(t.extra?'<span class="pill">'+esc(t.extra)+'</span>':'')+
+    (dl?'<span class="pill'+(late?' late':'')+'">'+dl+'</span>':'')+(t.priority==='Alta'?'<span class="pill alta">Alta</span>':'');
+  return '<li class="'+(t.done?'done':'')+'"><button class="tbox'+(t.done?' on':'')+(busyTasks[t.id]?' busy':'')+'" data-task="'+t.id+'" aria-label="Completar"></button>'+
+    '<div class="tt"><b>'+esc(t.title)+'</b><div class="meta">'+meta+'</div></div><span class="xpg">'+(t.done&&tx?'+'+tx.xp:'+'+taskReward(t))+' XP</span></li>';
+}
+let busyTasks = {};
+async function toggleTask(id){
+  const t = (state.cache.tasks||[]).find(x=>x.id===id);
+  if(!t || busyTasks[id]) return;
+  const makeDone = !t.done;
+  busyTasks[id] = true;
+  const prev = t.status;
+  t.done = makeDone;
+  if(makeDone){ const xp = taskReward(t); state.taskXp[id] = {xp, date:keyOf(new Date()), prevStatus:prev}; t.status = null; unlockAudio(); blip(); toast('+'+xp+' XP · misión cumplida'); }
+  else { const px = state.taskXp[id]; delete state.taskXp[id]; t.status = px && px.prevStatus; }
+  save(); render();
+  try{
+    const d = await api('/api/tasks', {method:'PATCH', body:{id, source:t.source, done:makeDone, prevStatus:makeDone?null:t.status}});
+    Object.assign(t, d.task);
+  }catch(e){
+    t.done = !makeDone;
+    if(makeDone) delete state.taskXp[id];
+    toast('No se pudo actualizar Notion: '+e.message);
+  }
+  delete busyTasks[id]; save(); render();
+}
+
 function nightKey(){ const d = new Date(); if(d.getHours() < 12) d.setDate(d.getDate()-1); return keyOf(d); }
 function pruneNight(){ const ks = Object.keys(state.night).sort(); while(ks.length > 14) delete state.night[ks.shift()]; }
 function renderNightCount(){
@@ -727,13 +1177,48 @@ function renderNightCount(){
 function tickClock(){ const n=new Date(); $('clock').textContent = pad(n.getHours())+':'+pad(n.getMinutes()); }
 
 // ---- Navegación ----
+let currentView = 'inicio';
 function go(v){
+  currentView = v;
   document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on', x.id==='v-'+v));
   document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on', b.dataset.go===v));
   if(v==='ajustes') fillSettings();
+  if(v==='agenda'){ refreshAgenda(); }
+  $('fab').classList.toggle('show', v==='agenda' && online() && conn.notion);
   window.scrollTo(0,0);
 }
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click', e=>{ e.stopPropagation(); go(b.dataset.go); }));
+function refreshAgenda(){ renderAgenda(); loadTasks(); loadEvents(agDay); }
+$('agPrev').onclick = ()=>{ const d = fromKey(agDay); d.setDate(d.getDate()-1); agDay = keyOf(d); renderAgenda(); loadEvents(agDay); };
+$('agNext').onclick = ()=>{ const d = fromKey(agDay); d.setDate(d.getDate()+1); agDay = keyOf(d); renderAgenda(); loadEvents(agDay); };
+
+// ---- Nueva misión ----
+let ntSource = 'u';
+$('fab').onclick = ()=>{
+  $('ntTitle').value=''; $('ntErr').textContent='';
+  $('ntDate').value = agDay; setNtSource(ntSource); show('newTask'); setTimeout(()=>$('ntTitle').focus(),50);
+};
+function setNtSource(s){
+  ntSource = s;
+  $('ntSrc').querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.s===s));
+  const m = (state.cache.meta||{})[s];
+  const opts = m && m.extraOptions || [];
+  $('ntExtraWrap').style.display = opts.length ? '' : 'none';
+  $('ntExtra').innerHTML = '<option value="">—</option>'+opts.map(o=>'<option>'+esc(o)+'</option>').join('');
+}
+$('ntSrc').querySelectorAll('button').forEach(b=>b.onclick=()=>setNtSource(b.dataset.s));
+$('ntCancel').onclick = ()=>hide('newTask');
+$('ntSave').onclick = async ()=>{
+  const title = $('ntTitle').value.trim();
+  if(!title){ $('ntErr').textContent='Escribe la misión.'; return; }
+  $('ntSave').disabled = true; $('ntSave').textContent = 'Guardando…';
+  try{
+    const d = await api('/api/tasks', {method:'POST', body:{source:ntSource, title, date:$('ntDate').value||null, priority:$('ntPrio').value||null, extra:$('ntExtra').value||null}});
+    state.cache.tasks = (state.cache.tasks||[]).concat([d.task]); save();
+    hide('newTask'); render(); toast('Misión guardada en Notion');
+  }catch(e){ $('ntErr').textContent = e.message; }
+  $('ntSave').disabled = false; $('ntSave').textContent = 'Guardar misión';
+};
 
 // ---- Check-in ----
 function startCheckin(){
@@ -749,22 +1234,23 @@ $('mCancel').onclick = ()=>hide('mission');
 
 function doCheckin(){
   const now = new Date(), k = keyOf(now);
-  if(state.checkins[k]) return;
+  if(state.checkins[k] || tooEarly(now)) return;
   const t = now.getHours()*60+now.getMinutes();
   const rank = rankFor(t, toMin(state.settings.wake));
-  const rec = {time:fmtMin(t), rank, xp:RANKS[rank].xp, target:state.settings.wake, ts:now.toISOString()};
+  const money = isActive(now) ? moneyFor(rank, k) : 0;
+  const rec = {time:fmtMin(t), rank, xp:RANKS[rank].xp, money, target:state.settings.wake, ts:now.toISOString()};
   state.checkins[k] = rec; save();
   const msgs = (state.settings.messages||[]).filter(Boolean);
   const msg = msgs.length ? msgs[Math.floor(Math.random()*msgs.length)] : '';
   $('spRank').textContent = rank; $('spRank').className = 'rk '+rank;
   $('spLabel').textContent = 'RANGO · '+RANKS[rank].label.toUpperCase();
-  $('spXp').textContent = '+'+rec.xp+' XP · '+rec.time;
+  $('spXp').textContent = '+'+rec.xp+' XP'+(money?' · +'+soles(money):'')+' · '+rec.time;
   $('spMsg').textContent = msg;
   show('splash'); fanfare(rank);
   if(state.settings.voice && msg && 'speechSynthesis' in window){
     setTimeout(()=>{ try{ const u = new SpeechSynthesisUtterance(msg); u.lang='es-MX'; speechSynthesis.speak(u);}catch(e){} }, 700);
   }
-  render();
+  render(); pushCheckin(k);
 }
 $('splash').onclick = ()=>hide('splash');
 
@@ -785,32 +1271,53 @@ $('manSave').onclick = ()=>{
   const v = $('manTime').value; if(!v) return;
   const target = state.settings.wake;
   const rank = rankFor(toMin(v), toMin(target));
-  state.checkins[manKey] = {time:v, rank, xp:Math.round(RANKS[rank].xp/2), target, manual:true, ts:new Date().toISOString()};
-  save(); render(); hide('manual'); toast('Registrado: rango '+rank);
+  state.checkins[manKey] = {time:v, rank, xp:Math.round(RANKS[rank].xp/2), money:0, target, manual:true, ts:new Date().toISOString()};
+  save(); render(); hide('manual'); toast('Registrado: rango '+rank); pushCheckin(manKey);
 };
 $('manDel').onclick = ()=>{
-  if(confirm('¿Borrar el registro de este día?')){ delete state.checkins[manKey]; save(); render(); hide('manual'); toast('Borrado'); }
+  if(confirm('¿Borrar el registro de este día?')){ delete state.checkins[manKey]; save(); render(); hide('manual'); toast('Borrado'); pushCheckin(manKey); }
 };
 $('manCancel').onclick = ()=>hide('manual');
+
+// ---- Fondo: canje ----
+$('fundSpend').onclick = ()=>{
+  const bal = fundEarned() - fundSpent();
+  const a = prompt('¿Cuánto sacaste del fondo? (disponible '+soles(bal)+')');
+  if(a===null) return;
+  const amount = parseFloat(String(a).replace(',','.'));
+  if(!(amount>0)) return toast('Monto inválido');
+  if(amount > bal + 0.001) return toast('No te alcanza: tienes '+soles(bal));
+  const note = prompt('¿En qué? (opcional)') || '';
+  state.spent.push({date:keyOf(new Date()), amount, note}); save(); render(); toast('Canje registrado');
+};
 
 // ---- Audio ----
 let actx = null;
 function unlockAudio(){ try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==='suspended') actx.resume(); }catch(e){} }
-function fanfare(rank){
+function tone(freqs, step, lastLen, vol){
   if(!actx) return;
-  const good = rank==='S'||rank==='A';
-  const notes = good ? [523.25,659.25,783.99,1046.5] : [392,349.23,329.63];
-  notes.forEach((f,i)=>{
+  freqs.forEach((f,i)=>{
     const o=actx.createOscillator(), g=actx.createGain();
     o.type = 'triangle'; o.frequency.value = f;
-    const t = actx.currentTime + i*0.11, len = (i===notes.length-1)?0.7:0.22;
-    g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.3,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+len);
+    const t = actx.currentTime + i*step, len = (i===freqs.length-1)?lastLen:0.22;
+    g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(vol,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+len);
     o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t+len+0.05);
   });
 }
+function fanfare(rank){
+  const good = rank==='S'||rank==='A';
+  tone(good ? [523.25,659.25,783.99,1046.5] : [392,349.23,329.63], 0.11, 0.7, 0.3);
+}
+function blip(){ tone([783.99,1174.66], 0.07, 0.25, 0.18); }
 
 // ---- Ajustes ----
 let pendingTheme = null;
+function renderConn(){
+  const c = conn;
+  const tag = (ok, t) => '<span class="'+(ok?'ok':'')+'">'+(ok?'✓ ':'✕ ')+t+'</span>';
+  $('connState').innerHTML = !c.checked ? '<span>Revisando…</span>' :
+    tag(c.keyOk,'Clave') + tag(c.keyOk && c.notion,'Notion') + tag(c.keyOk && c.calendar,'Calendar');
+}
 function fillSettings(){
   const s = state.settings;
   $('sName').value = s.name; $('sAge').value = s.age || '';
@@ -818,9 +1325,25 @@ function fillSettings(){
   $('sWake').value = s.wake; $('sBed').value = s.bed;
   $('sCode').value = s.code||''; $('sVoice').checked = !!s.voice;
   $('sMsgs').value = (s.messages||[]).join('\n');
+  $('sKey').value = s.apiKey || '';
+  $('sPerS').value = s.fund.perS; $('sPerA').value = s.fund.perA; $('sCap').value = s.fund.cap;
+  const editable = fundEditable();
+  ['sPerS','sPerA','sCap'].forEach(id=>$(id).disabled = !editable);
+  $('fundLock').textContent = editable
+    ? (s.fundLockedAt ? 'Puedes cambiarlo hoy: los montos solo se editan del 1 al 3 de cada mes.' : 'Define tus montos. Después de guardar, solo se pueden cambiar del 1 al 3 de cada mes.')
+    : 'Bloqueado hasta el 1 del próximo mes. Así el techo no se sube en caliente.';
+  $('sRewards').innerHTML = REWARD_SLOTS.map(r=>'<div class="f"><label for="rw_'+r.id+'">'+r.n+'</label><input id="rw_'+r.id+'" autocomplete="off" value="'+esc(s.rewards[r.id]||'')+'" placeholder="¿Qué te vas a regalar?"></div>').join('');
   pendingTheme = s.theme;
   themePicker($('sThemes'), s.theme, t=>{ pendingTheme = t; state.settings.theme = t; save(); });
+  renderConn();
 }
+$('sTest').onclick = async ()=>{
+  state.settings.apiKey = $('sKey').value.trim(); save();
+  conn.checked = false; renderConn();
+  await checkConn(); renderConn();
+  if(conn.keyOk){ toast('Conectado'); syncCheckins(); loadTasks(); loadEvents(keyOf(new Date())); }
+  else toast(conn.error || 'Clave incorrecta');
+};
 $('sSave').onclick = ()=>{
   const s = state.settings;
   s.name = $('sName').value.trim() || s.name;
@@ -831,16 +1354,26 @@ $('sSave').onclick = ()=>{
   s.code = $('sCode').value.trim();
   s.voice = $('sVoice').checked;
   s.messages = lines($('sMsgs').value);
+  const newKey = $('sKey').value.trim();
+  const keyChanged = newKey !== s.apiKey; s.apiKey = newKey;
+  if(fundEditable()){
+    const n = (id, def) => { const v = parseFloat($(id).value); return v>=0 ? v : def; };
+    s.fund = {perS:n('sPerS',s.fund.perS), perA:n('sPerA',s.fund.perA), cap:n('sCap',s.fund.cap)};
+    s.fundLockedAt = keyOf(new Date());
+  }
+  REWARD_SLOTS.forEach(r=>{ s.rewards[r.id] = $('rw_'+r.id).value.trim(); });
   if(pendingTheme) s.theme = pendingTheme;
-  save(); render(); toast('Guardado');
+  save(); render(); fillSettings(); toast('Guardado');
+  if(keyChanged) boot();
 };
 $('sUndo').onclick = ()=>{
   const k = keyOf(new Date());
   if(!state.checkins[k]) return toast('Hoy no hay check-in');
-  if(confirm('¿Borrar el check-in de hoy?')){ delete state.checkins[k]; save(); render(); toast('Borrado'); }
+  if(confirm('¿Borrar el check-in de hoy?')){ delete state.checkins[k]; save(); render(); toast('Borrado'); pushCheckin(k); }
 };
 $('sExport').onclick = async ()=>{
-  const txt = JSON.stringify(state);
+  const copy = JSON.parse(JSON.stringify(state)); delete copy.cache; copy.settings.apiKey = '';
+  const txt = JSON.stringify(copy);
   try{ await navigator.clipboard.writeText(txt); toast('Respaldo copiado. Guárdalo en Notas.'); }
   catch(e){ prompt('Copia este texto y guárdalo:', txt); }
 };
@@ -850,8 +1383,9 @@ $('sImport').onclick = ()=>{
   try{
     const s = JSON.parse(txt);
     if(!s.settings || !s.checkins) throw 0;
-    state = merge(s); state.settings.onboarded = true;
-    save(); applyTheme(state.settings.theme); render(); fillSettings(); toast('Respaldo restaurado');
+    const key = state.settings.apiKey;
+    state = merge(s); state.settings.onboarded = true; if(!state.settings.apiKey) state.settings.apiKey = key;
+    save(); applyTheme(state.settings.theme); render(); fillSettings(); toast('Respaldo restaurado'); syncCheckins();
   }catch(e){ toast('Ese texto no es un respaldo válido'); }
 };
 $('sTutorial').onclick = ()=>startOnboarding();
@@ -859,7 +1393,7 @@ $('sTutorial').onclick = ()=>startOnboarding();
 // ---- Onboarding ----
 let ob = 0, obDraft = null;
 const OB_STEPS = [
-  { // 0 Bienvenida + nombre + edad
+  {
     html: d => '<div class="kick">Bienvenido</div><h2>Empieza tu<br>disciplina</h2>'+
       '<p class="lead">Esta app mide <b>una sola decisión</b>: levantarte cuando suena la alarma. Todo lo demás del día se construye sobre esa victoria.</p>'+
       '<div class="f"><label for="obName">¿Cómo te llamas?</label><input id="obName" autocomplete="off" value="'+esc(d.name||'')+'"></div>'+
@@ -872,7 +1406,7 @@ const OB_STEPS = [
       d.name = n; d.age = a;
     }
   },
-  { // 1 Objetivos + horario
+  {
     html: d => '<div class="kick">Tu por qué</div><h2>¿Para qué<br>te levantas?</h2>'+
       '<p class="lead">Escribe tus objetivos concretos. Van a aparecer en tu inicio: son lo que vas a leer cuando <b>quieras volver a la cama</b>.</p>'+
       '<div class="f"><label for="obGoals">Objetivos (uno por línea)</label><textarea id="obGoals" placeholder="Llegar a mis clases de las 7&#10;Llegar temprano a la oficina&#10;Recuperar el control de mi día">'+esc((d.goals||[]).join('\n'))+'</textarea></div>'+
@@ -886,15 +1420,15 @@ const OB_STEPS = [
       if($('obBed').value) d.bed = $('obBed').value;
     }
   },
-  { // 2 Cómo funciona el check-in
+  {
     html: d => '<div class="kick">Cómo funciona</div><h2>El check-in</h2>'+
       '<p class="lead">Cuando te levantes, abre la app y toca <b>ME LEVANTÉ</b>. Según la hora te toca un rango:</p>'+
       '<div class="ranks">'+['S','A','B','C','D'].map((r,i)=>'<div><div class="mini '+r+'">'+r+'</div>'+['≤5 min','≤15 min','≤30 min','≤60 min','Más'][i]+'</div>').join('')+'</div>'+
-      '<div class="tut"><div class="n"><span>1</span></div><div><b>S y A cuentan como cumplido</b><div>Suben tu racha y te dan más XP para subir de nivel y desbloquear logros.</div></div></div>'+
+      '<div class="tut"><div class="n"><span>1</span></div><div><b>S y A cuentan como cumplido</b><div>Suben tu racha, te dan XP y suman soles a tu fondo de premios.</div></div></div>'+
       '<div class="tut"><div class="n"><span>2</span></div><div><b>Nunca dos seguidas</b><div>Un día malo no borra tu racha, solo gasta tu comodín. Si fallas dos días seguidos, vuelve a cero. El domingo es libre.</div></div></div>'+
-      '<div class="tut"><div class="n"><span>3</span></div><div><b>¿Olvidaste hacer check-in?</b><div>En Registro puedes anotar un día a mano. Da la mitad de XP, pero no pierdes la racha.</div></div></div>'
+      '<div class="tut"><div class="n"><span>3</span></div><div><b>¿Olvidaste hacer check-in?</b><div>En Registro puedes anotar un día a mano. Da la mitad de XP y no suma soles, pero no pierdes la racha.</div></div></div>'
   },
-  { // 3 Código del baño
+  {
     html: d => '<div class="kick">Opcional</div><h2>El código<br>del baño</h2>'+
       '<p class="lead">Si tu sueño es pesado, esto te obliga a <b>salir de la cama</b> para hacer check-in:</p>'+
       '<div class="paper"><small>CÓDIGO DE HOY</small><b>'+(esc(d.code)||'4827')+'</b></div>'+
@@ -903,7 +1437,7 @@ const OB_STEPS = [
       '<div class="f"><label for="obCode">Tu código (déjalo vacío si no quieres usarlo)</label><input id="obCode" inputmode="numeric" autocomplete="off" value="'+esc(d.code||'')+'"></div>',
     read: d => { d.code = $('obCode').value.trim(); }
   },
-  { // 4 Frases
+  {
     html: d => '<div class="kick">Tus frases</div><h2>Lo primero<br>que escuchas</h2>'+
       '<p class="lead">Cada vez que haces check-in sale <b>una frase al azar</b> de esta lista y, si quieres, la app la lee en voz alta. Pon cosas que te den risa o te activen. Puedes cambiarlas cuando quieras en Ajustes.</p>'+
       '<div class="f"><label for="obMsgs">Frases (una por línea)</label><textarea id="obMsgs" style="min-height:180px">'+esc((d.messages||[]).join('\n'))+'</textarea></div>'+
@@ -914,7 +1448,7 @@ const OB_STEPS = [
       d.messages = m; d.voice = $('obVoice').checked;
     }
   },
-  { // 5 Tema
+  {
     html: d => '<div class="kick">Último paso</div><h2>Elige tu<br>estilo</h2>'+
       '<p class="lead">Puedes cambiarlo cuando quieras en Ajustes.</p><div class="themes" id="obThemes"></div>',
     after: d => themePicker($('obThemes'), d.theme, t=>{ d.theme = t; })
@@ -946,7 +1480,7 @@ $('obNext').onclick = ()=>{
 };
 $('obBack').onclick = ()=>{
   const st = OB_STEPS[ob];
-  if(st.read) st.read(obDraft); // guarda lo escrito aunque tenga errores
+  if(st.read) st.read(obDraft);
   if(ob>0){ ob--; renderOb(); }
 };
 
@@ -954,14 +1488,26 @@ $('obBack').onclick = ()=>{
 function show(id){ $(id).classList.add('show'); }
 function hide(id){ $(id).classList.remove('show'); }
 let tt=null;
-function toast(m){ const t=$('toast'); t.textContent=m; t.style.display='block'; clearTimeout(tt); tt=setTimeout(()=>t.style.display='none',2200); }
+function toast(m){ const t=$('toast'); t.textContent=m; t.style.display='block'; clearTimeout(tt); tt=setTimeout(()=>t.style.display='none',2400); }
 
 // ---- Arranque ----
+async function boot(){
+  if(!state.settings.apiKey){ conn = {checked:true, keyOk:false}; render(); return; }
+  await checkConn(); render();
+  if(online()){ syncCheckins(); loadTasks(); loadEvents(keyOf(new Date())); if(agDay!==keyOf(new Date())) loadEvents(agDay); }
+}
 applyTheme(state.settings.theme);
 render(); tickClock();
 if(!state.settings.onboarded) startOnboarding();
+boot();
 setInterval(()=>{ tickClock(); renderNightCount(); }, 15000);
-document.addEventListener('visibilitychange', ()=>{ if(!document.hidden){ render(); tickClock(); } });
+let lastRefresh = Date.now();
+document.addEventListener('visibilitychange', ()=>{
+  if(document.hidden) return;
+  const today = keyOf(new Date());
+  render(); tickClock();
+  if(Date.now() - lastRefresh > 60000){ lastRefresh = Date.now(); if(online()){ syncCheckins(); loadTasks(); loadEvents(today); } else boot(); }
+});
 if(new URLSearchParams(location.search).has('checkin')){ const c=$('cta'); if(c) c.classList.add('pulse'); }
 if('serviceWorker' in navigator && location.protocol==='https:'){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
 })();

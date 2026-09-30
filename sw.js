@@ -1,4 +1,4 @@
-const CACHE = 'disciplina-v2';
+const CACHE = 'disciplina-v3';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
@@ -7,7 +7,8 @@ self.addEventListener('activate', e => {
 });
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  // Red primero (para recibir actualizaciones), caché si no hay internet.
+  const url = new URL(e.request.url);
+  if (url.pathname.startsWith('/api/')) return; // datos siempre frescos, nunca en caché
   e.respondWith(
     fetch(e.request).then(r => {
       const copy = r.clone();

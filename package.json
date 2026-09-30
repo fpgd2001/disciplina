@@ -1,0 +1,9 @@
+{
+  "name": "disciplina",
+  "version": "3.0.0",
+  "private": true,
+  "description": "App de disciplina: check-in de despertar, agenda desde Notion y Google Calendar.",
+  "dependencies": {
+    "node-ical": "^0.27.2"
+  }
+}
