@@ -800,8 +800,8 @@ async function loadTasks(){
   try{
     const d = await api('/api/tasks');
     state.cache.tasks = d.tasks; state.cache.meta = d.meta; state.cache.sources = d.sources;
-    state.cache.syncedAt = new Date().toISOString(); save();
-  }catch(e){ state.cache.error = e.message; }
+    state.cache.syncedAt = new Date().toISOString(); state.cache.error = null; save();
+  }catch(e){ state.cache.error = e.message; save(); }
   tasksLoading = false; render();
 }
 async function loadEvents(k){
@@ -911,8 +911,16 @@ function achievements(info, level){
     {ic:'LV5', n:'Nivel 5',           h:'Llegar a nivel 5',                       on:level>=5},
     {ic:'L10', n:'Nivel 10',          h:'Llegar a nivel 10',                      on:level>=10}
   ];
+  // Un logro ganado no se pierde aunque después cambie la condición (ej. "Semana perfecta").
+  const store = state.achUnlocked || (state.achUnlocked = {});
+  const fresh = [];
+  const mark = a => { if(a.on && !store[a.n]){ store[a.n] = keyOf(new Date()); fresh.push(a.n); } a.on = a.on || !!store[a.n]; };
+  list.forEach(mark);
   const got = list.filter(a=>a.on).length;
-  list.push({ic:'PT', n:'Platino', h:'Desbloquea todos los demás', on:got===list.length, platino:true});
+  const plat = {ic:'PT', n:'Platino', h:'Desbloquea todos los demás', on:got===list.length, platino:true};
+  mark(plat); list.push(plat);
+  if(fresh.length){ save(); if(state.achSeeded) setTimeout(()=>toast('Logro desbloqueado: '+fresh.join(', ')), 400); }
+  if(!state.achSeeded){ state.achSeeded = true; save(); }
   return list;
 }
 function sleepAdvice(age){
@@ -985,16 +993,20 @@ function organizeDay(list){
   const all = (list||[]).map(cleanEvent);
   const info = all.filter(e=>e.kind==='info');
   const routine = all.filter(e=>e.kind==='rutina').sort((a,b)=>a.s-b.s);
-  const main = all.filter(e=>e.kind!=='info' && e.kind!=='rutina').sort((a,b)=>a.s-b.s || (b.e2-b.s)-(a.e2-a.s));
+  const main = all.filter(e=>e.kind!=='info' && e.kind!=='rutina').sort((a,b)=>a.s-b.s || (b.e2-b.s)-(a.e2-a.s) || (a.kind==='eval')-(b.kind==='eval'));
   // anida los que caen dentro de otro compromiso (ej. un examen dentro de su clase)
-  const top = [];
+  const top = [], placed = [];
   main.forEach(e=>{
-    const parent = top.find(p=>p.s<=e.s && p.e2>=e.e2 && (p.kind!=='eval' || e.kind==='eval'));
-    if(parent && e.kind==='eval' && parent.kind!=='eval'){ (parent.kids=parent.kids||[]).push(e); parent.hasEval = true; }
-    else if(parent && parent.e2-parent.s > e.e2-e.s){ (parent.kids=parent.kids||[]).push(e); }
-    else top.push(Object.assign(e,{kids:e.kids||[]}));
+    // se anida dentro del compromiso más corto que lo contiene (una evaluación queda dentro de su clase)
+    const parent = placed.filter(p=>p.kind!=='eval' && p.s<=e.s && p.e2>=e.e2 && ((p.e2-p.s) > (e.e2-e.s) || e.kind==='eval'))
+      .sort((a,b)=>(a.e2-a.s)-(b.e2-b.s))[0];
+    e.kids = [];
+    if(parent){ parent.kids.push(e); if(e.kind==='eval') parent.hasEval = true; }
+    else top.push(e);
+    placed.push(e);
   });
-  return {info, routine, main: top};
+  const flat = main.slice().sort((a,b)=>a.s-b.s);
+  return {info, routine, main: top, flat};
 }
 const KIND_LABEL = {clase:'Clase', trabajo:'Trabajo', eval:'Evaluación', otro:''};
 
@@ -1008,6 +1020,8 @@ function render(){
   const info = streakInfo();
   const achs = achievements(info, level);
   const got = achs.filter(a=>a.on).length;
+  if(state.lastLevel && level > state.lastLevel) setTimeout(()=>toast('¡Subiste a nivel '+level+'!'), 900);
+  if(state.lastLevel !== level){ state.lastLevel = level; save(); }
 
   // Inicio
   $('hello').textContent = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
@@ -1179,6 +1193,7 @@ function renderAgenda(){
     const bad = (state.cache.sources||[]).filter(x=>!x.ok);
     let html = '';
     if(miss.length) html += '<div class="setup"><b>Falta configurar</b><p>En Vercel falta: '+miss.join(' y ')+'.</p></div>';
+    if(state.cache.error && conn.notion) html += '<div class="setup"><b>No pude cargar tus tareas</b><p>'+esc(state.cache.error)+'</p></div>';
     if(bad.length) html += '<div class="setup"><b>Notion no deja leer</b><p>'+bad.map(x=>esc((state.cache.meta[x.key]||{}).label||x.key)+': '+esc(x.hint||x.error)).join('<br>')+'</p></div>';
     setup.innerHTML = html;
   }
@@ -1192,8 +1207,8 @@ function renderAgenda(){
     $('agEvCount').textContent = o.info.map(i=>i.title).join(' · ');
     let html = '';
     if(isToday){
-      const cur = o.main.find(e=>e.s<=nowM && e.e2>nowM);
-      const nxt = o.main.find(e=>e.s>nowM);
+      const cur = o.flat.filter(e=>e.s<=nowM && e.e2>nowM).sort((a,b)=>(a.e2-a.s)-(b.e2-b.s))[0];
+      const nxt = o.flat.find(e=>e.s>nowM);
       if(cur || nxt){
         html += '<li class="nownext">'+
           (cur?'<div><small>Ahora · hasta '+cur.end+'</small><b>'+esc(cur.title)+'</b></div>':'<div><small>Ahora</small><b style="color:var(--muted)">Libre</b></div>')+
@@ -1376,6 +1391,10 @@ function openManual(k){
 }
 $('manSave').onclick = ()=>{
   const v = $('manTime').value; if(!v) return;
+  const now = new Date();
+  if(manKey === keyOf(now) && toMin(v) > now.getHours()*60+now.getMinutes()) return toast('Esa hora todavía no llega');
+  const prev = state.checkins[manKey];
+  if(prev && !prev.manual && !confirm('Ya hiciste check-in real ese día ('+prev.time+', rango '+prev.rank+'). Si lo reemplazas queda como manual: mitad de XP y sin soles. ¿Seguro?')) return;
   const target = state.settings.wake;
   const rank = rankFor(toMin(v), toMin(target));
   state.checkins[manKey] = {time:v, rank, xp:Math.round(RANKS[rank].xp/2), money:0, target, manual:true, ts:new Date().toISOString()};
@@ -1636,11 +1655,18 @@ applyTheme(state.settings.theme);
 render(); tickClock();
 if(!state.settings.onboarded) startOnboarding();
 boot();
-setInterval(()=>{ tickClock(); renderNightCount(); }, 15000);
+let lastMinute = -1, lastDay = keyOf(new Date());
+setInterval(()=>{
+  tickClock(); renderNightCount();
+  const n = new Date(), m = n.getHours()*60+n.getMinutes(), k = keyOf(n);
+  if(k !== lastDay){ if(agDay === lastDay) agDay = k; lastDay = k; if(online()){ loadEvents(k); loadTasks(); } }
+  if(m !== lastMinute){ lastMinute = m; if(!document.querySelector('.ov.show')) render(); }
+}, 15000);
 let lastRefresh = Date.now();
 document.addEventListener('visibilitychange', ()=>{
   if(document.hidden) return;
   const today = keyOf(new Date());
+  if(today !== lastDay){ if(agDay === lastDay) agDay = today; lastDay = today; lastRefresh = 0; }
   render(); tickClock();
   if(Date.now() - lastRefresh > 60000){ lastRefresh = Date.now(); if(online()){ syncCheckins(); loadTasks(); loadEvents(today); } else boot(); }
 });
