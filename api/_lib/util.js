@@ -18,6 +18,12 @@ const TASK_SOURCES = {
 };
 const CHECKINS_DB = process.env.NOTION_DB_CHECKINS || '84af8f34-2be6-42e0-92ea-8522b51c0843';
 
+// La app manda la clave codificada (para aceptar tildes o ñ).
+function sentKey(req) {
+  const raw = String(req.headers['x-app-key'] || '');
+  try { return decodeURIComponent(raw).trim(); } catch (e) { return raw.trim(); }
+}
+
 function send(res, code, body) {
   res.statusCode = code;
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -27,9 +33,9 @@ function send(res, code, body) {
 
 // Toda llamada necesita la clave de la app (APP_KEY) en el header x-app-key.
 function authorized(req, res) {
-  const key = process.env.APP_KEY;
+  const key = String(process.env.APP_KEY || '').trim();
   if (!key) { send(res, 503, { error: 'Falta configurar APP_KEY en Vercel.' }); return false; }
-  if (req.headers['x-app-key'] !== key) { send(res, 401, { error: 'Clave incorrecta.' }); return false; }
+  if (sentKey(req) !== key) { send(res, 401, { error: 'Clave incorrecta.' }); return false; }
   return true;
 }
 
@@ -42,7 +48,7 @@ async function readBody(req) {
 }
 
 async function notion(path, method = 'GET', body) {
-  const token = process.env.NOTION_TOKEN;
+  const token = String(process.env.NOTION_TOKEN || '').trim();
   if (!token) { const e = new Error('Falta configurar NOTION_TOKEN en Vercel.'); e.status = 503; throw e; }
   const r = await fetch('https://api.notion.com/v1' + path, {
     method,
@@ -79,4 +85,4 @@ function fail(res, e) {
   send(res, e.status || 500, { error: e.message || 'Error', hint: e.hint });
 }
 
-module.exports = { TASK_SOURCES, CHECKINS_DB, send, authorized, readBody, notion, queryAll, plain, fail };
+module.exports = { sentKey, TASK_SOURCES, CHECKINS_DB, send, authorized, readBody, notion, queryAll, plain, fail };

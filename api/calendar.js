@@ -31,7 +31,7 @@ function expand(ev, from, to) {
 
 module.exports = async (req, res) => {
   if (!authorized(req, res)) return;
-  const urls = (process.env.GCAL_ICS_URL || '').split(/[\s,]+/).filter(Boolean);
+  const urls = String(process.env.GCAL_ICS_URL || '').trim().split(/[\s,]+/).filter(Boolean);
   if (!urls.length) return send(res, 503, { error: 'Falta configurar GCAL_ICS_URL en Vercel.' });
   try {
     const q = new URL(req.url, 'http://x').searchParams;

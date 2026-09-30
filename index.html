@@ -344,6 +344,10 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .conn{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .conn span{font-size:11px;font-weight:800;letter-spacing:.1em;padding:5px 8px;border:1px solid var(--line);color:var(--muted)}
 .conn span.ok{color:var(--hi);border-color:var(--hi)}
+.pw{position:relative}
+.pw input{padding-right:64px}
+.pw button{position:absolute;right:1px;top:1px;bottom:1px;width:58px;background:var(--panel2);color:var(--ink);font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;border-left:1px solid var(--line)}
+#connMsg{color:var(--ink);line-height:1.45}
 </style>
 </head>
 <body>
@@ -505,7 +509,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
       <div class="conn" id="connState"></div>
       <div class="f">
         <label for="sKey">Clave de la app</label>
-        <input id="sKey" type="password" autocomplete="off" placeholder="La misma que pusiste en Vercel (APP_KEY)">
+        <div class="pw"><input id="sKey" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="La misma que pusiste en Vercel (APP_KEY)"><button type="button" id="sKeyEye" aria-label="Mostrar clave">Ver</button></div>
+        <div class="err" id="connMsg" style="font-weight:600"></div>
         <div class="hint">Conecta la app con tu Notion y tu Google Calendar. Sin la clave, la app funciona igual pero solo en este celular.</div>
       </div>
       <button class="btn sec" id="sTest">Probar conexión</button>
@@ -711,7 +716,7 @@ let conn = {checked:false, keyOk:false, notion:false, calendar:false, appKey:fal
 async function api(path, opts={}){
   const r = await fetch(path, {
     method: opts.method||'GET',
-    headers: Object.assign({'x-app-key': state.settings.apiKey||'', 'Content-Type':'application/json'}),
+    headers: {'x-app-key': encodeURIComponent((state.settings.apiKey||'').trim()), 'Content-Type':'application/json'},
     body: opts.body ? JSON.stringify(opts.body) : undefined,
     cache: 'no-store'
   });
@@ -1337,12 +1342,30 @@ function fillSettings(){
   themePicker($('sThemes'), s.theme, t=>{ pendingTheme = t; state.settings.theme = t; save(); });
   renderConn();
 }
+$('sKeyEye').onclick = ()=>{
+  const i = $('sKey'); const show = i.type === 'password';
+  i.type = show ? 'text' : 'password'; $('sKeyEye').textContent = show ? 'Ocultar' : 'Ver';
+};
+function connDiagnosis(){
+  const c = conn;
+  if(c.keyOk){
+    const miss = [];
+    if(!c.notion) miss.push('NOTION_TOKEN'); if(!c.calendar) miss.push('GCAL_ICS_URL');
+    return miss.length ? 'Clave correcta. En Vercel todavía falta: '+miss.join(' y ')+' (y después, Redeploy).' : 'Todo conectado.';
+  }
+  if(c.error) return 'No pude hablar con el servidor: '+c.error+'. Revisa que estés abriendo la app desde tu link de Vercel.';
+  if(!c.appKey) return 'El servidor todavía no tiene APP_KEY. Revisa que la variable se llame exactamente APP_KEY, que esté marcada para Production, y haz Redeploy en Vercel (las variables solo se aplican en un deploy nuevo).';
+  if(!c.sentLen) return 'Escribe la clave arriba.';
+  if(c.caseOnly) return 'Casi: la clave es igual pero con mayúsculas/minúsculas distintas. Toca VER y revisa (el celular a veces pone la primera letra en mayúscula).';
+  if(c.keyLen !== c.sentLen) return 'La clave no coincide: la de Vercel tiene '+c.keyLen+' caracteres y la que escribiste tiene '+c.sentLen+'. Toca VER para revisarla.';
+  return 'La clave no coincide, aunque tiene el mismo largo ('+c.keyLen+' caracteres). Toca VER y compárala letra por letra con la de Vercel.';
+}
 $('sTest').onclick = async ()=>{
   state.settings.apiKey = $('sKey').value.trim(); save();
-  conn.checked = false; renderConn();
+  conn.checked = false; renderConn(); $('connMsg').textContent = 'Probando…';
   await checkConn(); renderConn();
+  $('connMsg').textContent = connDiagnosis();
   if(conn.keyOk){ toast('Conectado'); syncCheckins(); loadTasks(); loadEvents(keyOf(new Date())); }
-  else toast(conn.error || 'Clave incorrecta');
 };
 $('sSave').onclick = ()=>{
   const s = state.settings;
