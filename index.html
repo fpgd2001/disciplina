@@ -348,6 +348,25 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .pw input{padding-right:64px}
 .pw button{position:absolute;right:1px;top:1px;bottom:1px;width:58px;background:var(--panel2);color:var(--ink);font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;border-left:1px solid var(--line)}
 #connMsg{color:var(--ink);line-height:1.45;white-space:pre-line}
+
+.events li.grp-h{border:0;padding:12px 0 2px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.events li.grp-h:first-child{padding-top:0}
+.events li.child{padding-left:26px;border-bottom:1px dashed var(--line)}
+.events li.child .t b{font-size:13px}
+.events li.k-eval .n{border-left-color:var(--hi)}
+.events li.k-trabajo .n{border-left-color:var(--ink)}
+.events .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.pill.k-eval{background:var(--hi);color:var(--on-hi);border-color:var(--hi)}
+.pill.k-clase{color:var(--acc);border-color:var(--acc-d)}
+.events li.routine{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--ink);padding:8px 0 4px;border:0}
+.events li.routine span{white-space:nowrap}
+.events li.routine b{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:700}
+.events li.routine span.past{opacity:.4}
+.events li.nownext{display:grid;grid-template-columns:1fr 1fr;gap:10px;border:0;padding:0 0 10px}
+.events li.nownext div{background:var(--panel2);padding:10px 12px;border-left:3px solid var(--acc)}
+.events li.nownext div:last-child{border-left-color:var(--line)}
+.events li.nownext small{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:3px}
+.events li.nownext b{font-size:14px;line-height:1.25;display:block}
 </style>
 </head>
 <body>
@@ -413,7 +432,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
     </div>
     <div id="agSetup"></div>
     <section class="card" id="agEventsCard">
-      <h2>Eventos <span class="more" id="agEvCount"></span></h2>
+      <h2>Tu día <span class="more" id="agEvCount"></span></h2>
       <ul class="events" id="agEvents"></ul>
     </section>
     <section class="card" id="agTasksCard">
@@ -652,7 +671,7 @@ const RANKS = {
   D:{xp:10,label:'Algo es algo'}
 };
 const XP_PER_LEVEL = 300;
-const OPEN_BEFORE = 90; // el check-in se abre 90 min antes de la hora meta
+const OPEN_BEFORE = 60; // el check-in se abre 60 min antes de la hora meta
 function tooEarly(now){ return now.getHours()*60+now.getMinutes() < toMin(state.settings.wake) - OPEN_BEFORE; }
 const NIGHT_ITEMS = ['Celular cargado','Alarmas puestas','Celular lejos de la cama','Nada de videos en la cama'];
 const REWARD_SLOTS = [
@@ -688,7 +707,7 @@ const monthKey = k => k.slice(0,7);
 
 function defaults(){
   return {
-    settings:{ name:'', age:null, goals:[], wake:'05:45', bed:'22:15', code:'', voice:true, theme:'rojo', messages:DEFAULT_MSGS.slice(), onboarded:false,
+    settings:{ name:'', age:null, goals:[], wake:'05:00', bed:'22:00', code:'', voice:true, theme:'rojo', messages:DEFAULT_MSGS.slice(), onboarded:false,
       apiKey:'', fund:{perS:4, perA:1, cap:104}, rewards:{streak6:'',level5:'',streak21:'',platino:''} },
     checkins:{}, night:{}, taskXp:{}, spent:[], rewardsClaimed:{}, cache:{tasks:[], meta:{}, events:{}, syncedAt:null}
   };
@@ -709,6 +728,12 @@ function load(){
   return defaults();
 }
 let state = load();
+// Migración única: la meta pasó de 05:45 a 05:00 (acordado el 30/09/2026).
+if(!state.settings.mig_wake500){
+  if(state.settings.wake === '05:45') state.settings.wake = '05:00';
+  state.settings.mig_wake500 = true;
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){ toast('No se pudo guardar'); } }
 
 // ---- API ----
@@ -925,6 +950,54 @@ function taskGroups(dayKey){
   return g;
 }
 
+
+// ---- Organización de eventos ----
+const NAME_RULES = [
+  [/^DER\.?\s*CIV(IL)?\.?\s*III\b/i, 'Derecho Civil III'],
+  [/^DER\.?\s*PROC\.?\s*CIV(IL)?\.?\s*I\b/i, 'Derecho Procesal Civil I'],
+  [/^DER\.?\s*PEN(AL)?\.?\s*II\b/i, 'Derecho Penal II'],
+  [/^LOG\.?\s*ARGU\.?\s*JUR\.?/i, 'Lógica y Argumentación Jurídica'],
+  [/^FILOSOF\.?\s*DER\.?/i, 'Filosofía del Derecho'],
+  [/\bC3\b/, 'Reunión C3'],
+  [/^Oficina\s*-\s*Pertel/i, 'Oficina Pertel'],
+  [/^Snack\b.*ma[ñn]ana/i, 'Snack mañana'],
+  [/^Snack\b.*tarde/i, 'Snack tarde'],
+  [/^Despertar\b.*/i, 'Despertar']
+];
+const ROUTINE_RE = /^(despertar|desayuno|almuerzo|cena|snack|lonche|merienda|dormir|alistarse|ducha)/i;
+function cleanEvent(e){
+  let t = String(e.title||'').trim(), loc = String(e.location||'').trim();
+  const exam = /^📝/.test(t);
+  t = t.replace(/^📝\s*/,'').replace(/^📚\s*/,'');
+  // quita "(N-305)" del final: el aula va como etiqueta
+  const m = t.match(/\s*\(([A-Z0-9]{1,3}-?\d{2,4})\)\s*$/i);
+  if(m){ if(!loc) loc = m[1]; t = t.slice(0, m.index).trim(); }
+  for(const [re, name] of NAME_RULES){ if(re.test(t)){ t = name; break; } }
+  let kind = 'otro';
+  if(exam) kind = 'eval';
+  else if(e.allDay) kind = 'info';
+  else if(ROUTINE_RE.test(t)) kind = 'rutina';
+  else if(/pertel|oficina|reuni[oó]n/i.test(t)) kind = 'trabajo';
+  else if(loc || NAME_RULES.slice(0,5).some(([,n])=>n===t)) kind = 'clase';
+  return Object.assign({}, e, {title:t, location:loc, kind, s:e.allDay?0:toMin(e.start), e2:e.allDay?1440:toMin(e.end)});
+}
+function organizeDay(list){
+  const all = (list||[]).map(cleanEvent);
+  const info = all.filter(e=>e.kind==='info');
+  const routine = all.filter(e=>e.kind==='rutina').sort((a,b)=>a.s-b.s);
+  const main = all.filter(e=>e.kind!=='info' && e.kind!=='rutina').sort((a,b)=>a.s-b.s || (b.e2-b.s)-(a.e2-a.s));
+  // anida los que caen dentro de otro compromiso (ej. un examen dentro de su clase)
+  const top = [];
+  main.forEach(e=>{
+    const parent = top.find(p=>p.s<=e.s && p.e2>=e.e2 && (p.kind!=='eval' || e.kind==='eval'));
+    if(parent && e.kind==='eval' && parent.kind!=='eval'){ (parent.kids=parent.kids||[]).push(e); parent.hasEval = true; }
+    else if(parent && parent.e2-parent.s > e.e2-e.s){ (parent.kids=parent.kids||[]).push(e); }
+    else top.push(Object.assign(e,{kids:e.kids||[]}));
+  });
+  return {info, routine, main: top};
+}
+const KIND_LABEL = {clase:'Clase', trabajo:'Trabajo', eval:'Evaluación', otro:''};
+
 // ---- Render ----
 let agDay = keyOf(new Date());
 function render(){
@@ -1066,10 +1139,14 @@ function renderTodayCard(todayKey, now){
   const items = [];
   const nowM = now.getHours()*60+now.getMinutes();
   const ev = state.cache.events[todayKey];
-  if(ev) ev.list.filter(e=>e.allDay || toMin(e.end) > nowM).slice(0,3).forEach(e=>{
-    const live = !e.allDay && toMin(e.start) <= nowM;
-    items.push('<li><span class="hm'+(live?' now':'')+'">'+(e.allDay?'Día':e.start)+'</span><span class="tx">'+esc(e.title)+'</span>'+(live?'<span class="pill late">Ahora</span>':'')+'</li>');
-  });
+  if(ev){
+    const o = organizeDay(ev.list);
+    o.main.filter(e=>e.e2 > nowM).slice(0,3).forEach(e=>{
+      const live = e.s <= nowM;
+      const tag = e.hasEval ? '<span class="pill late">Evaluación</span>' : live ? '<span class="pill late">Ahora</span>' : (e.location?'<span class="pill">'+esc(e.location)+'</span>':'');
+      items.push('<li><span class="hm'+(live?' now':'')+'">'+e.start+'</span><span class="tx">'+esc(e.title)+'</span>'+tag+'</li>');
+    });
+  }
   const g = taskGroups(todayKey);
   const tk = g.late.concat(g.day).filter(t=>!t.done);
   tk.slice(0,3).forEach(t=>{
@@ -1110,12 +1187,36 @@ function renderAgenda(){
   $('agEventsCard').style.display = (online() && conn.calendar) || ev ? '' : 'none';
   const nowM = new Date().getHours()*60+new Date().getMinutes();
   if(ev){
-    $('agEvCount').textContent = ev.list.length;
-    $('agEvents').innerHTML = ev.list.length ? ev.list.map(e=>{
-      const past = agDay < today || (agDay===today && !e.allDay && toMin(e.end) <= nowM);
-      return '<li class="'+(past?'past':'')+(e.allDay?' allday':'')+'"><div class="t">'+(e.allDay?'<b>Todo</b><small>el día</small>':'<b>'+e.start+'</b><small>'+e.end+'</small>')+
-        '</div><div class="n"><b>'+esc(e.title)+'</b>'+(e.location?'<small>'+esc(e.location)+'</small>':'')+'</div></li>';
-    }).join('') : '<li class="empty">Sin eventos este día.</li>';
+    const o = organizeDay(ev.list);
+    const isToday = agDay===today;
+    $('agEvCount').textContent = o.info.map(i=>i.title).join(' · ');
+    let html = '';
+    if(isToday){
+      const cur = o.main.find(e=>e.s<=nowM && e.e2>nowM);
+      const nxt = o.main.find(e=>e.s>nowM);
+      if(cur || nxt){
+        html += '<li class="nownext">'+
+          (cur?'<div><small>Ahora · hasta '+cur.end+'</small><b>'+esc(cur.title)+'</b></div>':'<div><small>Ahora</small><b style="color:var(--muted)">Libre</b></div>')+
+          (nxt?'<div><small>Siguiente · '+nxt.start+'</small><b>'+esc(nxt.title)+'</b></div>':'<div><small>Siguiente</small><b style="color:var(--muted)">Nada más hoy</b></div>')+'</li>';
+      }
+    }
+    const row = (e, child) => {
+      const past = agDay < today || (isToday && e.e2 <= nowM);
+      const kl = KIND_LABEL[e.kind];
+      const tags = (kl && !child ? '<span class="pill k-'+e.kind+'">'+kl+'</span>' : '')+(e.location?'<span class="pill">'+esc(e.location)+'</span>':'');
+      return '<li class="'+(past?'past':'')+(child?' child':'')+' k-'+e.kind+'"><div class="t"><b>'+e.start+'</b><small>'+e.end+'</small></div>'+
+        '<div class="n"><b>'+(e.kind==='eval'?'📝 ':'')+esc(e.title)+'</b>'+(tags?'<div class="meta">'+tags+'</div>':'')+'</div></li>'+
+        (e.kids||[]).map(k=>row(Object.assign({},k,{title:k.title.indexOf(e.title+':')===0?k.title.slice(e.title.length+1).trim():k.title}),true)).join('');
+    };
+    html += '<li class="grp-h">Compromisos</li>';
+    html += o.main.length ? o.main.map(e=>row(e,false)).join('') : '<li class="empty">Sin compromisos este día.</li>';
+    if(o.routine.length){
+      html += '<li class="grp-h">Rutina</li><li class="routine">'+o.routine.map(r=>{
+        const past = agDay < today || (isToday && r.e2 <= nowM);
+        return '<span class="'+(past?'past':'')+'"><b>'+r.start+'</b> '+esc(r.title)+'</span>';
+      }).join('')+'</li>';
+    }
+    $('agEvents').innerHTML = html;
   } else {
     $('agEvCount').textContent = '';
     $('agEvents').innerHTML = '<li class="empty">'+(eventsLoading[agDay]?'Cargando…':'Sin datos todavía.')+'</li>';
@@ -1136,7 +1237,7 @@ function renderAgenda(){
   $('agTasks').innerHTML = html || '<p class="empty">'+(tasksLoading?'Cargando…':'Nada pendiente. Toca + para agregar una misión.')+'</p>';
   $('agTasks').querySelectorAll('[data-task]').forEach(b=>b.onclick=()=>toggleTask(b.dataset.task));
   const at = state.cache.syncedAt ? new Date(state.cache.syncedAt) : null;
-  $('agSync').textContent = at ? 'Actualizado '+pad(at.getHours())+':'+pad(at.getMinutes())+' · desliza abajo o vuelve a abrir la tab para refrescar' : '';
+  $('agSync').textContent = at ? 'Actualizado '+pad(at.getHours())+':'+pad(at.getMinutes())+' · se refresca al abrir esta tab' : '';
 }
 function taskRow(t){
   const today = keyOf(new Date());
