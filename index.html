@@ -398,6 +398,18 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .hz-blk{position:absolute;left:0;right:0;border-left:3px solid var(--k);background:color-mix(in srgb,var(--k) 30%,var(--panel));overflow:hidden;padding:2px 1px 0 3px;font-style:normal;font-size:8.5px;font-weight:800;line-height:1.15;letter-spacing:.02em;text-transform:uppercase;color:var(--ink)}
 .hz-blk.hk-move{background:transparent;border-left-style:dotted}
 .hz-now{position:absolute;left:-2px;right:-2px;height:2px;background:var(--ink);z-index:2}
+.hz-tip{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + var(--nav) + 16px);margin:0 auto;width:fit-content;z-index:30;background:var(--ink);color:var(--bg);font-weight:700;font-size:13px;padding:10px 16px;text-align:center;pointer-events:none;animation:hzTip 10s linear forwards}
+@keyframes hzTip{to{opacity:0}}
+/* Celular echado: solo la semana, a pantalla completa (max-height deja fuera a la PC) */
+@media (orientation:landscape) and (max-height:500px){
+  body:has(#v-horario.on){padding:calc(env(safe-area-inset-top) + 6px) max(env(safe-area-inset-right),10px) calc(env(safe-area-inset-bottom) + 4px) max(env(safe-area-inset-left),10px)}
+  body:has(#v-horario.on) .wrap{max-width:none}
+  body:has(#v-horario.on) .nav,#v-horario.on>:not(#hzWeek,.hz-tip),#hzWeek>:not(.hz-grid){display:none}
+  .hz-tip{visibility:hidden}
+  #hzWeek{border:0;padding:0;background:none}
+  #v-horario .hz-grid{--ph:calc((100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 32px)/17)}
+  #v-horario .hz-blk{font-size:11px;padding:3px 4px 0 5px}
+}
 .hz-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:12px 0;font-size:11px;color:var(--muted);font-weight:600}
 .hz-legend i{display:inline-block;width:10px;height:10px;margin-right:6px;background:var(--k);transform:skewX(-14deg)}
 </style>
@@ -484,7 +496,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
       <h2><span id="hzDayTitle">Hoy</span> <span class="more" id="hzDayCount"></span></h2>
       <ul class="events hz-list" id="hzList"></ul>
     </section>
-    <section class="card">
+    <section class="card" id="hzWeek">
       <h2>Semana</h2>
       <div class="hz-grid" id="hzGrid"></div>
       <div class="hz-legend">
@@ -499,6 +511,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
       <div class="stat"><div class="label">Asistencia</div><div class="v" id="hzAtt">0<small>/0</small></div></div>
     </section>
     <p class="hint">Asistencia en prueba: toca el recuadro de una clase, Pertel o bloque de estudio para marcar ✓ asistí, T tarde o ✕ falté (otro toque lo limpia). Solo se guarda en este celular y no afecta XP, racha ni fondo.</p>
+    <div class="hz-tip">Si lo pones en landscape se verá el horario completo.</div>
   </section>
 
   <!-- ============ REGISTRO ============ -->
@@ -1349,7 +1362,7 @@ async function toggleTask(id){
 }
 
 // ---- Horario (semana tipo, ciclo 2026-2) ----
-const HZ_START = 5, HZ_END = 22, HZ_PH = 20;
+const HZ_START = 5, HZ_END = 22;
 const HB = (s,e,t,sub,k)=>({s,e,t,sub,k,sm:toMin(s),em:toMin(e)});
 const HZ_RUT = HB('05:00','05:45','Rutina','despertar y desayuno','meal');
 const HZ_ALM = HB('13:00','13:30','Almuerzo','','meal');
@@ -1424,7 +1437,8 @@ function renderHorario(){
   }).join('');
 
   // Semana
-  const top = m => ((m-HZ_START*60)/60*HZ_PH)+'px';
+  // En horas × --ph (alto de una hora, lo fija el CSS) para que la grilla se estire en landscape.
+  const top = m => 'calc('+((m-HZ_START*60)/60)+'*var(--ph))';
   let g = '<div></div>'+week.map((d,i)=>'<div class="hd'+(i===hzDay?' on':'')+(i===todayIdx?' today':'')+'">'+DOW[d.getDay()].slice(0,3)+'</div>').join('');
   g += '<div class="hz-times">'; for(let h=HZ_START+1; h<HZ_END; h+=2) g += '<span style="top:'+top(h*60)+'">'+h+'</span>'; g += '</div>';
   let pm = 0, um = 0, due = 0, went = 0;
@@ -1434,7 +1448,7 @@ function renderHorario(){
       const dur = b.em-b.sm;
       if(b.k==='pertel') pm += dur; if(b.k==='u') um += dur;
       if(hzTracks(b) && started(k,b)){ due++; if(mk[b.s]==='ok'||mk[b.s]==='late') went++; }
-      return '<i class="hz-blk hk-'+b.k+'" style="top:'+top(b.sm)+';height:'+(dur/60*HZ_PH-1)+'px">'+(dur>=90 && HZ_AB[b.t] ? HZ_AB[b.t] : '')+'</i>';
+      return '<i class="hz-blk hk-'+b.k+'" style="top:'+top(b.sm)+';height:calc('+(dur/60)+'*var(--ph) - 1px)">'+(dur>=90 && HZ_AB[b.t] ? HZ_AB[b.t] : '')+'</i>';
     }).join('')+(i===todayIdx && nowM>=HZ_START*60 && nowM<HZ_END*60 ? '<i class="hz-now" style="top:'+top(nowM)+'"></i>' : '')+'</button>';
   });
   $('hzGrid').innerHTML = g;
