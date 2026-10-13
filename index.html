@@ -581,6 +581,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
         <div class="f"><label for="sWake">Despertar</label><input type="time" id="sWake"></div>
         <div class="f"><label for="sBed">Dormir</label><input type="time" id="sBed"></div>
       </div>
+      <p class="hint">Lunes, martes y jueves la meta es 06:00 (no hay clase de 7). Esta hora vale para miércoles, viernes y sábado.</p>
     </section>
     <section class="card">
       <h2>Conexión</h2>
@@ -732,7 +733,10 @@ const RANKS = {
 };
 const XP_PER_LEVEL = 300;
 const OPEN_BEFORE = 60; // el check-in se abre 60 min antes de la hora meta
-function tooEarly(now){ return now.getHours()*60+now.getMinutes() < toMin(state.settings.wake) - OPEN_BEFORE; }
+// Lunes, martes y jueves la meta es 06:00; el resto de días usa la meta base (Ajustes).
+const WAKE_LATE = {days:[1,2,4], time:'06:00'};
+const wakeFor = d => WAKE_LATE.days.includes(d.getDay()) ? WAKE_LATE.time : state.settings.wake;
+function tooEarly(now){ return now.getHours()*60+now.getMinutes() < toMin(wakeFor(now)) - OPEN_BEFORE; }
 const NIGHT_ITEMS = ['Celular cargado','Alarmas puestas','Celular lejos de la cama','Nada de videos en la cama'];
 const REWARD_SLOTS = [
   {id:'streak6',  n:'Racha de 6 días',   test:(i,l)=>i.best>=6},
@@ -839,7 +843,7 @@ async function syncCheckins(){
     let restored = 0;
     Object.entries(remote).forEach(([k,c])=>{
       if(!state.checkins[k] && c.rank){
-        state.checkins[k] = {time:c.time, rank:c.rank, xp:c.xp, money:c.money, target:c.target||state.settings.wake, manual:c.manual, ts:null};
+        state.checkins[k] = {time:c.time, rank:c.rank, xp:c.xp, money:c.money, target:c.target||wakeFor(fromKey(k)), manual:c.manual, ts:null};
         restored++;
       }
     });
@@ -1089,7 +1093,7 @@ function render(){
   $('dNum').textContent = pad(now.getDate());
   $('dMon').textContent = MON[now.getMonth()];
   $('dDow').textContent = DOW[now.getDay()].toUpperCase();
-  $('tgt').textContent = s.wake;
+  $('tgt').textContent = wakeFor(now);
   $('tgtNote').textContent = isActive(now) ? 'primera decisión del día' : 'domingo libre · no cuenta para la racha';
   $('lvTag').textContent = 'NV '+level+' · '+xp+' XP';
   $('stLevel').textContent = level;
@@ -1108,7 +1112,7 @@ function render(){
       '<div><div class="t">'+rec.time+'</div><div class="d">'+RANKS[rec.rank].label+(rec.manual?' · manual':'')+'</div><div class="xp">+'+rec.xp+' XP'+(rec.money?' · +'+soles(rec.money):'')+'</div></div></div>';
   }else if(tooEarly(now)){
     hb.innerHTML = '<div class="done"><div class="badge"><span>Z</span></div><div><div class="t">Aún es de noche</div>'+
-      '<div class="d">El check-in se abre a las '+fmtMin(toMin(s.wake)-OPEN_BEFORE)+'. Si no puedes dormir: luz baja, nada de pantallas, y vuelve a la cama.</div></div></div>';
+      '<div class="d">El check-in se abre a las '+fmtMin(toMin(wakeFor(now))-OPEN_BEFORE)+'. Si no puedes dormir: luz baja, nada de pantallas, y vuelve a la cama.</div></div></div>';
   }else{
     hb.innerHTML = '<button class="cta" id="cta"><span>ME LEVANTÉ</span></button>';
     $('cta').onclick = startCheckin;
@@ -1134,13 +1138,15 @@ function render(){
     ? s.goals.slice(0,4).map(g=>'<li>'+esc(g)+'</li>').join('')
     : '<li class="empty" style="font-weight:500">Aún no tienes objetivos. Agrégalos en Ajustes: son lo que vas a leer cuando quieras volver a la cama.</li>';
 
-  const wake = toMin(s.wake), bed = toMin(s.bed);
+  // La pestaña Noche habla del próximo despertar: hoy si aún no llega la hora, si no mañana.
+  const nextUp = new Date(now); if(h*60+now.getMinutes() >= toMin(wakeFor(now))) nextUp.setDate(nextUp.getDate()+1);
+  const wakeHM = wakeFor(nextUp), wake = toMin(wakeHM), bed = toMin(s.bed);
   $('tnLine').textContent = 'Celular fuera '+fmtMin(bed-30)+' · Cama '+s.bed;
 
   // Noche
   $('nPhone').textContent = fmtMin(bed-30);
   $('nBed').textContent = s.bed;
-  $('nWake').textContent = s.wake;
+  $('nWake').textContent = wakeHM;
   const sleep = ((wake-bed)+1440)%1440;
   const adv = sleepAdvice(s.age);
   let note = 'Tu horario te da <b>'+Math.floor(sleep/60)+' h '+pad(sleep%60)+' min</b> de sueño.';
@@ -1357,12 +1363,13 @@ const hzCena = (s,e)=>HB(s,e,'Cena','','meal');
 const hzMove = (s,e)=>HB(s,e,'Traslado','','move');
 const hzPertel = (s,e)=>HB(s,e,'Pertel','oficina','pertel');
 const hzStudy = (s,e)=>HB(s,e,'Estudio en la U','biblioteca / repaso','study');
-const HZ_PERTEL_DAY = [HZ_RUT, hzPertel('08:00','13:00'), HZ_ALM, hzPertel('13:30','18:00'), hzCena('19:00','19:30')];
+const HZ_RUT6 = HB('06:00','06:45','Rutina','despertar y desayuno','meal'); // lunes, martes y jueves
+const HZ_PERTEL_DAY = [HZ_RUT6, hzPertel('08:00','13:00'), HZ_ALM, hzPertel('13:30','18:00'), hzCena('19:00','19:30')];
 const HZ_CIV = HB('07:00','10:00','Derecho Civil III','N-305','u');
 const HZ_PEN = HB('07:00','10:00','Derecho Penal II','N-302','u');
 const HZ_MIE_PM = [HB('16:00','18:00','Lógica y Argumentación','01-404','u'), HB('18:00','21:00','Filosofía del Derecho','01-503','u'), hzCena('21:00','21:30')];
 const HZ_VIE_PM = [HB('16:00','18:00','Lógica y Argumentación','I1-508','u'), hzCena('18:30','19:00')];
-const HZ_JUE = [HZ_RUT, HZ_CIV, hzMove('10:00','10:30'), hzPertel('10:30','13:00'), HZ_ALM, hzPertel('13:30','17:30'), hzMove('17:30','18:00'), HB('18:00','20:00','Procesal Civil I','N-303','u'), hzCena('20:00','20:30')];
+const HZ_JUE = [HZ_RUT6, HZ_CIV, hzMove('10:00','10:30'), hzPertel('10:30','13:00'), HZ_ALM, hzPertel('13:30','17:30'), hzMove('17:30','18:00'), HB('18:00','20:00','Procesal Civil I','N-303','u'), hzCena('20:00','20:30')];
 const HZ_SAB = [HZ_RUT, HB('07:00','10:00','Derecho Penal II','02-401','u'), HB('10:00','13:00','Procesal Civil I','A1-408','u'), HZ_ALM, HB('15:00','17:00','Estudio / repaso','','study'), hzCena('19:30','20:00')];
 const hzGapPertel = [hzMove('10:00','10:30'), hzPertel('10:30','13:00'), HZ_ALM, hzPertel('13:30','15:30'), hzMove('15:30','16:00')];
 const hzGapStudy = [hzStudy('10:00','13:00'), HZ_ALM, hzStudy('13:30','16:00')];
@@ -1530,9 +1537,10 @@ function doCheckin(){
   const now = new Date(), k = keyOf(now);
   if(state.checkins[k] || tooEarly(now)) return;
   const t = now.getHours()*60+now.getMinutes();
-  const rank = rankFor(t, toMin(state.settings.wake));
+  const target = wakeFor(now);
+  const rank = rankFor(t, toMin(target));
   const money = isActive(now) ? moneyFor(rank, k) : 0;
-  const rec = {time:fmtMin(t), rank, xp:RANKS[rank].xp, money, target:state.settings.wake, ts:now.toISOString()};
+  const rec = {time:fmtMin(t), rank, xp:RANKS[rank].xp, money, target, ts:now.toISOString()};
   state.checkins[k] = rec; save();
   const msgs = (state.settings.messages||[]).filter(Boolean);
   const msg = msgs.length ? msgs[Math.floor(Math.random()*msgs.length)] : '';
@@ -1557,7 +1565,7 @@ function openManual(k){
   manKey = k;
   const r = state.checkins[k];
   $('manTitle').textContent = (k===keyOf(today)?'Hoy':DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()].toLowerCase());
-  $('manTime').value = r ? r.time : state.settings.wake;
+  $('manTime').value = r ? r.time : wakeFor(d);
   $('manDel').style.display = r ? 'block' : 'none';
   show('manual');
 }
@@ -1567,7 +1575,7 @@ $('manSave').onclick = ()=>{
   if(manKey === keyOf(now) && toMin(v) > now.getHours()*60+now.getMinutes()) return toast('Esa hora todavía no llega');
   const prev = state.checkins[manKey];
   if(prev && !prev.manual && !confirm('Ya hiciste check-in real ese día ('+prev.time+', rango '+prev.rank+'). Si lo reemplazas queda como manual: mitad de XP y sin soles. ¿Seguro?')) return;
-  const target = state.settings.wake;
+  const target = wakeFor(fromKey(manKey));
   const rank = rankFor(toMin(v), toMin(target));
   state.checkins[manKey] = {time:v, rank, xp:Math.round(RANKS[rank].xp/2), money:0, target, manual:true, ts:new Date().toISOString()};
   save(); render(); hide('manual'); toast('Registrado: rango '+rank); pushCheckin(manKey);
@@ -1824,6 +1832,17 @@ async function boot(){
   if(online()){ syncCheckins(); loadTasks(); loadEvents(keyOf(new Date())); if(agDay!==keyOf(new Date())) loadEvents(agDay); }
 }
 applyTheme(state.settings.theme);
+// Migración única: el check-in real del martes 13/10/2026 se hizo con meta 05:00, pero ese día
+// ya regía la meta de 06:00 (acordado ese mismo día). Se recalcula rango, XP y soles.
+if(!state.settings.mig_wake600){
+  const k = '2026-10-13', r = state.checkins[k];
+  if(r && !r.manual && r.target === '05:00'){
+    r.target = wakeFor(fromKey(k)); r.rank = rankFor(toMin(r.time), toMin(r.target)); r.xp = RANKS[r.rank].xp;
+    r.money = 0; r.money = moneyFor(r.rank, k);
+    state.pendingPush = state.pendingPush||{}; state.pendingPush[k] = 1;
+  }
+  state.settings.mig_wake600 = true; save();
+}
 render(); tickClock();
 if(!state.settings.onboarded) startOnboarding();
 boot();

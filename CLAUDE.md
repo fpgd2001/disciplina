@@ -29,8 +29,9 @@ Nunca pongas llaves en el código ni en commits.
 
 ## Reglas del sistema (acordadas con Francisco — no cambiar sin preguntarle)
 
-- Meta de despertar: **05:00** (lunes a sábado; domingo libre, no cuenta).
-  El check-in se abre **60 min antes** de la meta.
+- Meta de despertar: **06:00 lunes, martes y jueves** (no tiene clase de 7am) y **05:00
+  miércoles, viernes y sábado**; domingo libre, no cuenta. En el código: `WAKE_LATE` / `wakeFor()`.
+  El check-in se abre **60 min antes** de la meta del día.
 - Rangos por minutos de retraso: S ≤5, A ≤15, B ≤30, C ≤60, D más. Solo S y A cuentan como cumplido.
 - Racha con regla **"nunca dos seguidas"**: un fallo usa el comodín; dos seguidos la reinician.
 - Registro manual (días olvidados): mitad de XP, cuenta para la racha, **no suma soles**,
