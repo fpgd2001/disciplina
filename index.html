@@ -204,8 +204,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 
 /* Barra inferior */
 .nav{position:fixed;left:0;right:0;bottom:0;z-index:40;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
-.nav .in{max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:var(--nav)}
-.nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;position:relative}
+.nav .in{max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);height:var(--nav)}
+.nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;position:relative}
 .nav svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .nav button.on{color:var(--ink)}
 .nav button.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;background:var(--acc);transform:skewX(-20deg)}
@@ -367,6 +367,39 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .events li.nownext div:last-child{border-left-color:var(--line)}
 .events li.nownext small{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:3px}
 .events li.nownext b{font-size:14px;line-height:1.25;display:block}
+/* Horario */
+.hk-pertel{--k:var(--acc)} .hk-u{--k:var(--hi)} .hk-study{--k:#4fc59a} .hk-meal{--k:var(--muted)} .hk-move{--k:var(--line)}
+.hz-days{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.hz-days button{background:var(--panel);border:1px solid var(--line);padding:8px 0 7px;text-align:center}
+.hz-days b{display:block;font-family:var(--display);font-weight:400;font-size:20px;line-height:1}
+.hz-days small{font-size:11px;color:var(--muted);font-weight:700}
+.hz-days button.today{border-bottom:3px solid var(--acc)}
+.hz-days button.today b{color:var(--acc)}
+.hz-days button.on{background:var(--ink);border-color:var(--ink)}
+.hz-days button.on b,.hz-days button.on small{color:var(--bg)}
+.hz-list .n{border-left-color:var(--k)}
+.hz-list li.minor{padding:6px 0}
+.hz-list li.minor .t b,.hz-list li.minor .n b{font-size:13px;font-weight:600;color:var(--muted)}
+.hz-list li.minor .t small{display:none}
+.hz-list li.minor .n{border-left-style:dashed}
+.att{flex:none;align-self:center;width:46px;height:38px;border:2px solid var(--line);transform:skewX(-10deg);font-family:var(--display);font-size:18px;color:var(--muted);display:grid;place-items:center}
+.att.ok{background:var(--hi);border-color:var(--hi);color:var(--on-hi)}
+.att.late{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.att.miss{border-color:var(--acc);color:var(--acc)}
+.att:disabled{opacity:.3}
+.hz-grid{display:grid;grid-template-columns:22px repeat(6,1fr);gap:0 3px;--ph:20px}
+.hz-grid .hd{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-bottom:6px;text-align:center}
+.hz-grid .hd.on{color:var(--ink)}
+.hz-grid .hd.today{color:var(--acc)}
+.hz-times,.hz-col{position:relative;height:calc(17*var(--ph))}
+.hz-times span{position:absolute;right:3px;transform:translateY(-50%);font-size:9px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.hz-col{display:block;text-align:left;background:repeating-linear-gradient(to bottom,var(--line) 0 1px,transparent 1px var(--ph))}
+.hz-col.on{outline:1px solid var(--muted);outline-offset:1px}
+.hz-blk{position:absolute;left:0;right:0;border-left:3px solid var(--k);background:color-mix(in srgb,var(--k) 30%,var(--panel));overflow:hidden;padding:2px 1px 0 3px;font-style:normal;font-size:8.5px;font-weight:800;line-height:1.15;letter-spacing:.02em;text-transform:uppercase;color:var(--ink)}
+.hz-blk.hk-move{background:transparent;border-left-style:dotted}
+.hz-now{position:absolute;left:-2px;right:-2px;height:2px;background:var(--ink);z-index:2}
+.hz-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:12px 0;font-size:11px;color:var(--muted);font-weight:600}
+.hz-legend i{display:inline-block;width:10px;height:10px;margin-right:6px;background:var(--k);transform:skewX(-14deg)}
 </style>
 </head>
 <body>
@@ -440,6 +473,32 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
       <div id="agTasks"></div>
     </section>
     <div class="syncline" id="agSync"></div>
+  </section>
+
+  <!-- ============ HORARIO ============ -->
+  <section class="view" id="v-horario">
+    <div class="vt"><h1>Hora<em>rio</em></h1><div class="sub">Ciclo 2026-2<br>Semana tipo</div></div>
+    <ul class="events" id="hzNow"></ul>
+    <div class="hz-days" id="hzDays"></div>
+    <section class="card">
+      <h2><span id="hzDayTitle">Hoy</span> <span class="more" id="hzDayCount"></span></h2>
+      <ul class="events hz-list" id="hzList"></ul>
+    </section>
+    <section class="card">
+      <h2>Semana</h2>
+      <div class="hz-grid" id="hzGrid"></div>
+      <div class="hz-legend">
+        <span class="hk-pertel"><i></i>Pertel</span><span class="hk-u"><i></i>Universidad</span><span class="hk-study"><i></i>Estudio</span><span class="hk-meal"><i></i>Comidas</span>
+      </div>
+      <div class="seg" id="hzPlan"><button data-p="vigente">Vigente</button><button data-p="alternativa">Alternativa</button></div>
+      <p class="hint" id="hzPlanHint"></p>
+    </section>
+    <section class="sum">
+      <div class="stat"><div class="label">Pertel</div><div class="v" id="hzPertel">0<small>h</small></div></div>
+      <div class="stat"><div class="label">Clases</div><div class="v" id="hzU">0<small>h</small></div></div>
+      <div class="stat"><div class="label">Asistencia</div><div class="v" id="hzAtt">0<small>/0</small></div></div>
+    </section>
+    <p class="hint">Asistencia en prueba: toca el recuadro de una clase, Pertel o bloque de estudio para marcar ✓ asistí, T tarde o ✕ falté (otro toque lo limpia). Solo se guarda en este celular y no afecta XP, racha ni fondo.</p>
   </section>
 
   <!-- ============ REGISTRO ============ -->
@@ -579,6 +638,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 <nav class="nav"><div class="in">
   <button data-go="inicio" class="on"><span class="dot" id="nightDot"></span><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Inicio</button>
   <button data-go="agenda"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M3.5 6l1.5 1.5L7.5 5M3.5 12l1.5 1.5L7.5 11M3.5 18l1.5 1.5L7.5 17"/></svg>Agenda</button>
+  <button data-go="horario"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Horario</button>
   <button data-go="registro"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="1"/><path d="M4 10h16M9 3v4M15 3v4M8 14h3M8 17h6"/></svg>Registro</button>
   <button data-go="logros"><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a4 4 0 0 0 4 4M17 6h3v1a4 4 0 0 1-4 4M12 14v4M8 21h8l-1-3H9z"/></svg>Logros</button>
   <button data-go="ajustes"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Ajustes</button>
@@ -708,8 +768,8 @@ const monthKey = k => k.slice(0,7);
 function defaults(){
   return {
     settings:{ name:'', age:null, goals:[], wake:'05:00', bed:'22:00', code:'', voice:true, theme:'rojo', messages:DEFAULT_MSGS.slice(), onboarded:false,
-      apiKey:'', fund:{perS:4, perA:1, cap:104}, rewards:{streak6:'',level5:'',streak21:'',platino:''} },
-    checkins:{}, night:{}, taskXp:{}, spent:[], rewardsClaimed:{}, cache:{tasks:[], meta:{}, events:{}, syncedAt:null}
+      apiKey:'', fund:{perS:4, perA:1, cap:104}, rewards:{streak6:'',level5:'',streak21:'',platino:''}, hzPlan:'vigente' },
+    checkins:{}, night:{}, taskXp:{}, attend:{}, spent:[], rewardsClaimed:{}, cache:{tasks:[], meta:{}, events:{}, syncedAt:null}
   };
 }
 function merge(s){
@@ -719,7 +779,7 @@ function merge(s){
   out.settings.fund = Object.assign(defaults().settings.fund, (s.settings||{}).fund||{});
   out.settings.rewards = Object.assign(defaults().settings.rewards, (s.settings||{}).rewards||{});
   out.cache = Object.assign(defaults().cache, s.cache||{});
-  ['night','taskXp','rewardsClaimed'].forEach(k=>{ if(!out[k] || typeof out[k]!=='object') out[k]={}; });
+  ['night','taskXp','rewardsClaimed','attend'].forEach(k=>{ if(!out[k] || typeof out[k]!=='object') out[k]={}; });
   if(!Array.isArray(out.spent)) out.spent = [];
   return out;
 }
@@ -1147,6 +1207,7 @@ function render(){
     '<div class="ach'+(a.on?' on':'')+(a.platino?' platino':'')+'"><div class="ic"><span>'+a.ic+'</span></div><div><div class="n">'+a.n+'</div><div class="h">'+a.h+'</div></div></div>').join('');
 
   renderAgenda();
+  renderHorario();
 }
 
 function renderTodayCard(todayKey, now){
@@ -1287,6 +1348,116 @@ async function toggleTask(id){
   delete busyTasks[id]; save(); render();
 }
 
+// ---- Horario (semana tipo, ciclo 2026-2) ----
+const HZ_START = 5, HZ_END = 22, HZ_PH = 20;
+const HB = (s,e,t,sub,k)=>({s,e,t,sub,k,sm:toMin(s),em:toMin(e)});
+const HZ_RUT = HB('05:00','05:45','Rutina','despertar y desayuno','meal');
+const HZ_ALM = HB('13:00','13:30','Almuerzo','','meal');
+const hzCena = (s,e)=>HB(s,e,'Cena','','meal');
+const hzMove = (s,e)=>HB(s,e,'Traslado','','move');
+const hzPertel = (s,e)=>HB(s,e,'Pertel','oficina','pertel');
+const hzStudy = (s,e)=>HB(s,e,'Estudio en la U','biblioteca / repaso','study');
+const HZ_PERTEL_DAY = [HZ_RUT, hzPertel('08:00','13:00'), HZ_ALM, hzPertel('13:30','18:00'), hzCena('19:00','19:30')];
+const HZ_CIV = HB('07:00','10:00','Derecho Civil III','N-305','u');
+const HZ_PEN = HB('07:00','10:00','Derecho Penal II','N-302','u');
+const HZ_MIE_PM = [HB('16:00','18:00','Lógica y Argumentación','01-404','u'), HB('18:00','21:00','Filosofía del Derecho','01-503','u'), hzCena('21:00','21:30')];
+const HZ_VIE_PM = [HB('16:00','18:00','Lógica y Argumentación','I1-508','u'), hzCena('18:30','19:00')];
+const HZ_JUE = [HZ_RUT, HZ_CIV, hzMove('10:00','10:30'), hzPertel('10:30','13:00'), HZ_ALM, hzPertel('13:30','17:30'), hzMove('17:30','18:00'), HB('18:00','20:00','Procesal Civil I','N-303','u'), hzCena('20:00','20:30')];
+const HZ_SAB = [HZ_RUT, HB('07:00','10:00','Derecho Penal II','02-401','u'), HB('10:00','13:00','Procesal Civil I','A1-408','u'), HZ_ALM, HB('15:00','17:00','Estudio / repaso','','study'), hzCena('19:30','20:00')];
+const hzGapPertel = [hzMove('10:00','10:30'), hzPertel('10:30','13:00'), HZ_ALM, hzPertel('13:30','15:30'), hzMove('15:30','16:00')];
+const hzGapStudy = [hzStudy('10:00','13:00'), HZ_ALM, hzStudy('13:30','16:00')];
+const HZ_PLANS = {
+  vigente:{d:'Pertel lunes, martes y jueves; miércoles y viernes, estudio en la U.',
+    days:[HZ_PERTEL_DAY, HZ_PERTEL_DAY, [HZ_RUT, HZ_CIV].concat(hzGapStudy, HZ_MIE_PM), HZ_JUE, [HZ_RUT, HZ_PEN].concat(hzGapStudy, HZ_VIE_PM), HZ_SAB]},
+  alternativa:{d:'Pertel en todos los huecos de lunes a viernes.',
+    days:[HZ_PERTEL_DAY, HZ_PERTEL_DAY, [HZ_RUT, HZ_CIV].concat(hzGapPertel, HZ_MIE_PM), HZ_JUE, [HZ_RUT, HZ_PEN].concat(hzGapPertel, HZ_VIE_PM), HZ_SAB]}
+};
+const HZ_AB = {'Pertel':'Pertel','Derecho Civil III':'Civil III','Derecho Penal II':'Penal II','Procesal Civil I':'Proc. Civil','Lógica y Argumentación':'Lógica','Filosofía del Derecho':'Filo.','Estudio en la U':'Estudio','Estudio / repaso':'Estudio'};
+// Asistencia (prueba): solo clases, Pertel y estudio. Se guarda en state.attend[fecha][horaInicio].
+const HZ_ATT = ['ok','late','miss'];
+const HZ_ATT_TXT = {ok:'✓', late:'T', miss:'✕'};
+const HZ_ATT_LBL = {ok:'asistí', late:'tarde', miss:'falté'};
+const hzTracks = b => b.k==='u' || b.k==='pertel' || b.k==='study';
+let hzDay = null;
+function hzWeek(){
+  const m = new Date(); m.setHours(0,0,0,0); m.setDate(m.getDate() - ((m.getDay()+6)%7));
+  return [0,1,2,3,4,5].map(i=>{ const d = new Date(m); d.setDate(m.getDate()+i); return d; });
+}
+function renderHorario(){
+  const now = new Date(), nowM = now.getHours()*60+now.getMinutes(), todayKey = keyOf(now);
+  const planId = HZ_PLANS[state.settings.hzPlan] ? state.settings.hzPlan : 'vigente';
+  const plan = HZ_PLANS[planId];
+  const week = hzWeek(), todayIdx = now.getDay()===0 ? -1 : now.getDay()-1;
+  if(hzDay === null) hzDay = todayIdx < 0 ? 0 : todayIdx;
+  const started = (k, b) => k < todayKey || (k === todayKey && b.sm <= nowM);
+
+  // Ahora / siguiente
+  let curT, curS = 'Ahora', nxt, nxtS = 'Siguiente';
+  if(todayIdx < 0){ curT = 'Domingo libre'; nxt = plan.days[0].find(hzTracks); nxtS = 'Lunes · '+nxt.s; }
+  else{
+    const list = plan.days[todayIdx];
+    const cur = list.find(b=>b.sm<=nowM && nowM<b.em);
+    nxt = list.find(b=>b.sm>nowM && b.k!=='move');
+    curT = cur ? (cur.k==='move' ? 'En camino' : cur.t) : (nowM < HZ_START*60 || nowM >= HZ_END*60 ? 'Descanso' : 'Tiempo libre');
+    if(cur) curS = 'Ahora · hasta '+cur.e;
+    if(nxt) nxtS = 'Siguiente · '+nxt.s;
+  }
+  $('hzNow').innerHTML = '<li class="nownext"><div><small>'+curS+'</small><b>'+esc(curT)+'</b></div>'+
+    '<div><small>'+nxtS+'</small><b'+(nxt?'':' style="color:var(--muted)"')+'>'+(nxt?esc(nxt.t):'Nada más hoy')+'</b></div></li>';
+
+  // Selector de día
+  $('hzDays').innerHTML = week.map((d,i)=>'<button class="'+(i===hzDay?'on':'')+(i===todayIdx?' today':'')+'" data-d="'+i+'" aria-label="'+DOW[d.getDay()]+' '+d.getDate()+'"><b>'+DOW1[d.getDay()]+'</b><small>'+d.getDate()+'</small></button>').join('');
+
+  // Día elegido
+  const dDate = week[hzDay], dKey = keyOf(dDate), marks = state.attend[dKey] || {};
+  const dList = plan.days[hzDay], tracked = dList.filter(hzTracks);
+  $('hzDayTitle').textContent = (dKey===todayKey ? 'Hoy · ' : '')+DOW[dDate.getDay()]+' '+dDate.getDate();
+  $('hzDayCount').textContent = 'ASISTENCIA '+tracked.filter(b=>marks[b.s]==='ok'||marks[b.s]==='late').length+'/'+tracked.length;
+  $('hzList').innerHTML = dList.map(b=>{
+    const minor = !hzTracks(b), st = marks[b.s];
+    const live = dKey===todayKey && b.sm<=nowM && nowM<b.em;
+    const tags = (live?'<span class="pill late">Ahora</span>':'')+(b.sub && !minor?'<span class="pill">'+esc(b.sub)+'</span>':'');
+    return '<li class="hk-'+b.k+(minor?' minor':'')+'"><div class="t"><b>'+b.s+'</b><small>'+b.e+'</small></div>'+
+      '<div class="n"><b>'+esc(b.t)+'</b>'+(tags?'<div class="meta">'+tags+'</div>':'')+'</div>'+
+      (minor?'':'<button class="att '+(st||'')+'" data-att="'+b.s+'"'+(started(dKey,b)?'':' disabled')+' aria-label="Asistencia de '+esc(b.t)+': '+(st?HZ_ATT_LBL[st]:'sin marcar')+'">'+(st?HZ_ATT_TXT[st]:'·')+'</button>')+'</li>';
+  }).join('');
+
+  // Semana
+  const top = m => ((m-HZ_START*60)/60*HZ_PH)+'px';
+  let g = '<div></div>'+week.map((d,i)=>'<div class="hd'+(i===hzDay?' on':'')+(i===todayIdx?' today':'')+'">'+DOW[d.getDay()].slice(0,3)+'</div>').join('');
+  g += '<div class="hz-times">'; for(let h=HZ_START+1; h<HZ_END; h+=2) g += '<span style="top:'+top(h*60)+'">'+h+'</span>'; g += '</div>';
+  let pm = 0, um = 0, due = 0, went = 0;
+  plan.days.forEach((list,i)=>{
+    const k = keyOf(week[i]), mk = state.attend[k] || {};
+    g += '<button class="hz-col'+(i===hzDay?' on':'')+'" data-d="'+i+'" aria-label="Ver '+DOW[week[i].getDay()]+'">'+list.map(b=>{
+      const dur = b.em-b.sm;
+      if(b.k==='pertel') pm += dur; if(b.k==='u') um += dur;
+      if(hzTracks(b) && started(k,b)){ due++; if(mk[b.s]==='ok'||mk[b.s]==='late') went++; }
+      return '<i class="hz-blk hk-'+b.k+'" style="top:'+top(b.sm)+';height:'+(dur/60*HZ_PH-1)+'px">'+(dur>=90 && HZ_AB[b.t] ? HZ_AB[b.t] : '')+'</i>';
+    }).join('')+(i===todayIdx && nowM>=HZ_START*60 && nowM<HZ_END*60 ? '<i class="hz-now" style="top:'+top(nowM)+'"></i>' : '')+'</button>';
+  });
+  $('hzGrid').innerHTML = g;
+  $('hzPlan').querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.p===planId));
+  $('hzPlanHint').textContent = plan.d;
+  const hrs = m => String(m/60).replace('.',',')+'<small>h</small>';
+  $('hzPertel').innerHTML = hrs(pm); $('hzU').innerHTML = hrs(um);
+  $('hzAtt').innerHTML = went+'<small>/'+due+'</small>';
+}
+$('v-horario').addEventListener('click', e=>{
+  const a = e.target.closest('[data-att]'), d = e.target.closest('[data-d]'), p = e.target.closest('[data-p]');
+  if(a){
+    const k = keyOf(hzWeek()[hzDay]), day = state.attend[k] || (state.attend[k] = {});
+    const i = HZ_ATT.indexOf(day[a.dataset.att]);
+    if(i === HZ_ATT.length-1) delete day[a.dataset.att]; else day[a.dataset.att] = HZ_ATT[i+1];
+    if(!Object.keys(day).length) delete state.attend[k];
+    save();
+  }
+  else if(d) hzDay = +d.dataset.d;
+  else if(p){ state.settings.hzPlan = p.dataset.p; save(); }
+  else return;
+  renderHorario();
+});
+
 function nightKey(){ const d = new Date(); if(d.getHours() < 12) d.setDate(d.getDate()-1); return keyOf(d); }
 function pruneNight(){ const ks = Object.keys(state.night).sort(); while(ks.length > 14) delete state.night[ks.shift()]; }
 function renderNightCount(){
@@ -1306,6 +1477,7 @@ function go(v){
   document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on', b.dataset.go===v));
   if(v==='ajustes') fillSettings();
   if(v==='agenda'){ refreshAgenda(); }
+  if(v==='horario'){ hzDay = null; renderHorario(); }
   $('fab').classList.toggle('show', v==='agenda' && online() && conn.notion);
   window.scrollTo(0,0);
 }
