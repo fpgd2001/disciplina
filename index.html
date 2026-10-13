@@ -792,12 +792,6 @@ function load(){
   return defaults();
 }
 let state = load();
-// Migración única: la meta pasó de 05:45 a 05:00 (acordado el 30/09/2026).
-if(!state.settings.mig_wake500){
-  if(state.settings.wake === '05:45') state.settings.wake = '05:00';
-  state.settings.mig_wake500 = true;
-  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
-}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){ toast('No se pudo guardar'); } }
 
 // ---- API ----
@@ -1832,17 +1826,6 @@ async function boot(){
   if(online()){ syncCheckins(); loadTasks(); loadEvents(keyOf(new Date())); if(agDay!==keyOf(new Date())) loadEvents(agDay); }
 }
 applyTheme(state.settings.theme);
-// Migración única: el check-in real del martes 13/10/2026 se hizo con meta 05:00, pero ese día
-// ya regía la meta de 06:00 (acordado ese mismo día). Se recalcula rango, XP y soles.
-if(!state.settings.mig_wake600){
-  const k = '2026-10-13', r = state.checkins[k];
-  if(r && !r.manual && r.target === '05:00'){
-    r.target = wakeFor(fromKey(k)); r.rank = rankFor(toMin(r.time), toMin(r.target)); r.xp = RANKS[r.rank].xp;
-    r.money = 0; r.money = moneyFor(r.rank, k);
-    state.pendingPush = state.pendingPush||{}; state.pendingPush[k] = 1;
-  }
-  state.settings.mig_wake600 = true; save();
-}
 render(); tickClock();
 if(!state.settings.onboarded) startOnboarding();
 boot();
